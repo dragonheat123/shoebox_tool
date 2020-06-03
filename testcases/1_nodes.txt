@@ -1,0 +1,1 @@
+[{"id":"0","roomtype":"outside","floorArea":"","innerWalls":[]},{"id":"1","roomtype":"service","floorArea":"4","innerWalls":[]},{"id":"2","roomtype":"normal","floorArea":"1","innerWalls":[]},{"id":"3","roomtype":"normal","floorArea":"1","innerWalls":[]},{"id":"4","roomtype":"normal","floorArea":"1","innerWalls":[]},{"id":"5","roomtype":"normal","floorArea":"1","innerWalls":[]}]

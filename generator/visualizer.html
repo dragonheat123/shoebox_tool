@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">	
+		<title>HAPPINESS DEVELOPMENTAL PLAN</title>
+		<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+		<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+		<link rel="stylesheet" href="dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="css/style.css">
+		<style>
+		</style
+	</head>
+	<body>
+	
+	<nav class="navbar navbar-expand navbar-light bg-light border-bottom">
+	  <a class="navbar-brand" href="#">Happiness Development Plan</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarsExample02">
+	  </div>
+	</nav>
+	<div class="container">
+		<div id="canvas" >
+		</div>
+		<div class="row">
+			<div class="col-12">
+			</div>
+		</div>
+	</div>
+
+	<script src="js/three.min.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<script src="js/stats.min.js"></script>
+	<script>
+		'use strict'
+		let log = console.log.bind(console);
+		let canvas=document.getElementById('canvas');
+		
+		let nodes=JSON.parse('[{"id":"0","roomtype":"outside","floorArea":"","innerWalls":[]},{"id":"1","roomtype":"service","floorArea":"4","innerWalls":[]},{"id":"2","roomtype":"normal","floorArea":"1","innerWalls":[]},{"id":"3","roomtype":"normal","floorArea":"1","innerWalls":[]},{"id":"4","roomtype":"normal","floorArea":"1","innerWalls":[]},{"id":"5","roomtype":"normal","floorArea":"1","innerWalls":[]}]');
+		let edges=JSON.parse('[{"edgeId":"1/4","nodes":["1","4"],"isAccessible":true,"isDoorway":true,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["2","2"],["2.5","2"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"1/5","nodes":["1","5"],"isAccessible":true,"isDoorway":true,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["2.5","2"],["3","2"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"1/9","nodes":["1","9"],"isAccessible":true,"isDoorway":true,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["6","2"],["6.5","2"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"1/10","nodes":["1","10"],"isAccessible":true,"isDoorway":true,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["6.5","2"],["7","2"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"1/14","nodes":["1","14"],"isAccessible":true,"isDoorway":true,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["10","2"],["10.5","2"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"1/15","nodes":["1","15"],"isAccessible":true,"isDoorway":true,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["10.5","2"],["11","2"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/1","nodes":["0","1"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["2","2"],["2","4"]],"wallLength":"2","wallArea":"2","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["11","2"],["11","4"]],"wallLength":"2","wallArea":"2","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["3","2"],["3","3"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["6","2"],["6","3"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["7","2"],["7","3"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["10","2"],["11","3"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["2","4"],["11","4"]],"wallLength":"9","wallArea":"9","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["3","3"],["6","3"]],"wallLength":"3","wallArea":"3","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["7","3"],["10","3"]],"wallLength":"3","wallArea":"3","thickness":"0.1"}]},{"edgeId":"0/2","nodes":["0","2"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["0.2","2"],["0.8","2"]],"wallLength":"0.6","wallArea":"0.6","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["0.2","2"],["0.2","1"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/3","nodes":["0","3"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["0.8","2"],["1.5","2"]],"wallLength":"0.8","wallArea":"0.8","thickness":"0.1"}]},{"edgeId":"0/4","nodes":["0","4"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["1.5","2"],["2","2"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["2","1"],["2.5","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"0/5","nodes":["0","5"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["3","2"],["3.5","2"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["2.5","1"],["3","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"0/6","nodes":["0","6"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["3.5","2"],["4.2","2"]],"wallLength":"0.7","wallArea":"0.7","thickness":"0.1"}]},{"edgeId":"0/7","nodes":["0","7"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["4.2","2"],["4.8","2"]],"wallLength":"0.6","wallArea":"0.6","thickness":"0.1"}]},{"edgeId":"0/8","nodes":["0","8"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["4.8","2"],["5.5","2"]],"wallLength":"0.7","wallArea":"0.7","thickness":"0.1"}]},{"edgeId":"0/9","nodes":["0","9"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["5.5","2"],["6","2"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["6","1"],["6.5","1"]],"wallLength":"","wallArea":"","thickness":""}]},{"edgeId":"0/10","nodes":["0","10"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["7","2"],["7.5","2"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["6.5","1"],["7","1"]],"wallLength":"0.5","wallArea":"","thickness":""}]},{"edgeId":"0/11","nodes":["0","11"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["7.5","2"],["8.2","2"]],"wallLength":"0.7","wallArea":"0.7","thickness":"0.1"}]},{"edgeId":"0/12","nodes":["0","12"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["8.2","2"],["8.8","2"]],"wallLength":"0.6","wallArea":"0.6","thickness":"0.1"}]},{"edgeId":"0/13","nodes":["0","13"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["8.8","2"],["9.5","2"]],"wallLength":"0.7","wallArea":"0.7","thickness":"0.1"}]},{"edgeId":"0/14","nodes":["0","14"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["9.5","2"],["10","2"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["10","1"],["10.5","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"0/15","nodes":["0","15"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["11","2"],["11.5","2"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["10.5","1"],["11","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"0/16","nodes":["0","16"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["11.5","2"],["12.2","2"]],"wallLength":"0.7","wallArea":"0.7","thickness":"0.1"}]},{"edgeId":"0/17","nodes":["0","17"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["12.2","2"],["12.8","2"]],"wallLength":"0.6","wallArea":"0.6","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["12.8","2"],["12.8","1"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/18","nodes":["0","18"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["0","1"],["0.2","1"]],"wallLength":"0.2","wallArea":"0.2","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["0","0"],["1","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["0","1"],["0","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/19","nodes":["0","19"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["1","0"],["2","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["2","1"],["2","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/20","nodes":["0","20"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["3","0"],["4","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["3","1"],["3","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/21","nodes":["0","21"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["4","0"],["5","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/22","nodes":["0","22"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["5","0"],["6","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["6","1"],["6","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/23","nodes":["0","23"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["7","0"],["8","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["7","1"],["7.0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/24","nodes":["0","24"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["8","0"],["9","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/25","nodes":["0","25"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["9","0"],["10","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["10","1"],["10","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/26","nodes":["0","26"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["11","0"],["12","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["11","1"],["11","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"0/27","nodes":["0","27"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"cement","wallType":"structural","vertices":[["12.8","1"],["13","1"]],"wallLength":"0.2","wallArea":"0.2","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["12","0"],["13","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"},{"material":"cement","wallType":"structural","vertices":[["13","1"],["13","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"2/3","nodes":["2","3"],"isAccessible":true,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["0.6","1.25"],["1.1","1.25"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["0.8","2"],["0.8","1"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"3/4","nodes":["3","4"],"isAccessible":true,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["1.5","2"],["1.5","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"}]},{"edgeId":"4/5","nodes":["4","5"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["2.5","2"],["2.5","1"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"5/6","nodes":["5","6"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["3.5","2"],["3.5","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"},{"material":"wood","wallType":"infill","vertices":[["3.5","1.25"],["3.5","1"]],"wallLength":"0.25","wallArea":"0.25","thickness":"0.1"}]},{"edgeId":"6/7","nodes":["6","7"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["3.9","1.25"],["4.4","1.25"]],"wallLength":"0.3","wallArea":"0.3","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["4.2","2"],["4.2","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"},{"material":"wood","wallType":"infill","vertices":[["4.2","1.25"],["4.2","1"]],"wallLength":"0.25","wallArea":"0.25","thickness":"0.1"}]},{"edgeId":"7/8","nodes":["7","8"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["4.6","1.25"],["4.8","1.25"]],"wallLength":"0.2","wallArea":"0.2","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["4.8","2"],["4.8","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"},{"material":"wood","wallType":"infill","vertices":[["4.8","1.25"],["4.8","1"]],"wallLength":"0.25","wallArea":"0.25","thickness":"0.1"}]},{"edgeId":"8/9","nodes":["8","9"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["5.5","2"],["5.5","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"},{"material":"wood","wallType":"infill","vertices":[["5.5","1.25"],["5.5","1"]],"wallLength":"0.25","wallArea":"0.25","thickness":"0.1"}]},{"edgeId":"10/9","nodes":["10","9"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["6.5","2"],["6.5","1"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"10/11","nodes":["10","11"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["7.5","2"],["7.5","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"},{"material":"wood","wallType":"infill","vertices":[["7.5","1.25"],["7.5","1"]],"wallLength":"0.25","wallArea":"0.25","thickness":"0.1"}]},{"edgeId":"11/12","nodes":["11","12"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["7.9","1.25"],["8.4","1.25"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["8.2","2"],["8.2","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"},{"material":"wood","wallType":"infill","vertices":[["8.2","1.25"],["8.2","1"]],"wallLength":"0.25","wallArea":"0.25","thickness":"0.1"}]},{"edgeId":"12/13","nodes":["12","13"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["8.6","1.25"],["9.1","1.25"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["8.8","2"],["8.8","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"},{"material":"wood","wallType":"infill","vertices":[["8.8","1.25"],["8.8","1"]],"wallLength":"0.25","wallArea":"0.25","thickness":"0.1"}]},{"edgeId":"13/14","nodes":["13","14"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["9.5","2"],["9.5","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"},{"material":"wood","wallType":"infill","vertices":[["9.5","1.25"],["9.5","1"]],"wallLength":"0.25","wallArea":"0.25","thickness":"0.1"}]},{"edgeId":"14/15","nodes":["14","15"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["10.5","2"],["10.5","1"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"15/16","nodes":["15","16"],"isAccessible":true,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["11.5","1"],["11.5","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"}]},{"edgeId":"16/17","nodes":["16","17"],"isAccessible":true,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["11.9","2"],["12.4","2"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"},{"material":"wood","wallType":"structural","vertices":[["12.2","2"],["12.2","1.25"]],"wallLength":"0.75","wallArea":"0.75","thickness":"0.1"}]},{"edgeId":"18/2","nodes":["18","2"],"isAccessible":true,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["0.2","1"],["0.8","1"]],"wallLength":"0.6","wallArea":"0.6","thickness":"0.1"}]},{"edgeId":"18/3","nodes":["18","3"],"isAccessible":true,"isDoorway":false,"adjWalls":[]},{"edgeId":"19/3","nodes":["19","3"],"isAccessible":true,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["1.2","1"],["1.5","1"]],"wallLength":"0.3","wallArea":"0.3","thickness":"0.1"}]},{"edgeId":"19/4","nodes":["19","4"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["1.5","1"],["2","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"20/5","nodes":["20","5"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["3","1"],["3.5","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"20/6","nodes":["20","6"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["3.5","1"],["4","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"21/6","nodes":["21","6"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["4","1"],["4.2","1"]],"wallLength":"0.2","wallArea":"0.2","thickness":"0.1"}]},{"edgeId":"21/7","nodes":["21","7"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["4.2","1"],["4.8","1"]],"wallLength":"0.6","wallArea":"0.6","thickness":"0.1"}]},{"edgeId":"21/8","nodes":["21","8"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["4.8","1"],["5","1"]],"wallLength":"0.2","wallArea":"0.2","thickness":"0.1"}]},{"edgeId":"22/8","nodes":["22","8"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["5","1"],["5.5","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"22/9","nodes":["22","9"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["5.5","1"],["6","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"10/23","nodes":["10","23"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["7","1"],["7.5","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"11/23","nodes":["11","23"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["7.5","1"],["8","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"11/24","nodes":["11","24"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["8","1"],["8.2","1"]],"wallLength":"0.2","wallArea":"0.2","thickness":"0.1"}]},{"edgeId":"12/24","nodes":["12","24"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["8.2","1"],["8.8","1"]],"wallLength":"0.6","wallArea":"0.6","thickness":"0.1"}]},{"edgeId":"13/24","nodes":["13","24"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["8.8","1"],["9","1"]],"wallLength":"0.2","wallArea":"0","thickness":""}]},{"edgeId":"13/25","nodes":["13","25"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["9","1"],["9.5","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"14/25","nodes":["14","25"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["9.5","1"],["10","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"15/26","nodes":["15","26"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["11","1"],["11.5","1"]],"wallLength":"0.5","wallArea":"0.5","thickness":"0.1"}]},{"edgeId":"16/26","nodes":["16","26"],"isAccessible":true,"isDoorway":false,"adjWalls":[]},{"edgeId":"16/27","nodes":["16","27"],"isAccessible":true,"isDoorway":false,"adjWalls":[]},{"edgeId":"17/27","nodes":["17","27"],"isAccessible":true,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"structural","vertices":[["12.2","1"],["12.8","1"]],"wallLength":"0.6","wallArea":"0.6","thickness":"0.1"}]},{"edgeId":"18/19","nodes":["18","19"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["1","1"],["1","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"20/21","nodes":["20","21"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["4","1"],["4","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"21/22","nodes":["21","22"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["5","1"],["5","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"23/24","nodes":["23","24"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["8","1"],["8","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"24/25","nodes":["24","25"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["9","1"],["9","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]},{"edgeId":"26/27","nodes":["26","27"],"isAccessible":false,"isDoorway":false,"adjWalls":[{"material":"wood","wallType":"infill","vertices":[["12","1"],["12","0"]],"wallLength":"1","wallArea":"1","thickness":"0.1"}]}]');
+		
+		<!-- for(let i=0;i<nodes.length;i++){ -->
+			<!-- //nodes[i].walls=	//individual connected walls -->
+			<!-- //nodes[i].plan=	//draw points -->
+			<!-- for(let j=0;j<edges.length;j++){ -->
+				
+			<!-- } -->
+		<!-- } -->
+		
+		const aspectRatio=16/9;		
+		
+		let scene = new THREE.Scene();
+		let camera = new THREE.PerspectiveCamera( 75, aspectRatio, 1, 1000 );
+		let renderer;
+		let container=document.getElementById('canvas');
+		
+		scene.background = new THREE.Color( 0xb0b0b0 );
+		camera.position.set( 0, 0, 10 );
+		
+		let extrudeSettings = {
+			depth: 1,
+			bevelEnabled: false
+		};
+		
+		var mesh=[];
+		for(let i=0;i<edges.length;i++){
+			
+			log('Iteration '+i);
+			let drawPoints=[];
+			let edgeWalls=edges[i]['adjWalls'];
+			
+			if (edgeWalls.length==0) continue;
+			
+			let shape=new THREE.Shape();
+			shape.moveTo(0,0);	//draw from point
+			let firstPt;
+			let prevPt=[];
+			
+			for(let j=0;j<edgeWalls.length;j++){
+			
+				if (j==0) {
+					firstPt=edgeWalls[j]['vertices'][0];
+				}
+				
+				if(edgeWalls[j]['vertices'][0][0]!=prevPt[0]||edgeWalls[j]['vertices'][0][1]!=prevPt[1]){
+					shape.lineTo(Number(edgeWalls[j]['vertices'][0][0]),Number(edgeWalls[j]['vertices'][0][1]));
+					drawPoints.push(edgeWalls[j]['vertices'][0]);
+				}
+				shape.lineTo(Number(edgeWalls[j]['vertices'][1][0]),Number(edgeWalls[j]['vertices'][1][1]));
+				drawPoints.push(edgeWalls[j]['vertices'][1]);
+				prevPt=edgeWalls[j]['vertices'][1];
+			}
+			drawPoints.push(firstPt);
+			log(edgeWalls);
+			shape.lineTo(Number(firstPt[0]),Number(firstPt[1]));
+			log(drawPoints);
+			var geometry = new THREE.ExtrudeBufferGeometry( shape, extrudeSettings );
+			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			mesh.push(new THREE.Mesh( geometry, material ));
+			scene.add(mesh[i]);
+		}
+		log(mesh);
+		let directionalLight = new THREE.DirectionalLight( 0xffffff, 0.6 );
+		directionalLight.position.set( 0.75, 0.75, 1.0 ).normalize();
+		scene.add( directionalLight );
+		let ambientLight = new THREE.AmbientLight( 0xcccccc, 0.2 );
+		scene.add( ambientLight );
+		/*/
+		let group = new THREE.Group();
+		scene.add( group );
+		//
+		//
+		let helper = new THREE.GridHelper( 160, 10 );
+		helper.rotation.x = Math.PI / 2;
+		group.add( helper );
+		/*/
+		renderer = new THREE.WebGLRenderer( { antialias: true } );
+		renderer.setSize( canvas.offsetWidth, canvas.offsetWidth/aspectRatio );
+		container.appendChild( renderer.domElement );
+		let stats = new Stats();
+		container.appendChild( stats.dom );
+		
+		window.onresize=function onWindowResize(){
+			camera.updateProjectionMatrix();
+			renderer.setSize( canvas.offsetWidth, canvas.offsetWidth/aspectRatio );
+		};
+		
+		function animate() {
+			requestAnimationFrame( animate );
+			
+			<!-- for(let i=0;i<mesh.length;i++){ -->
+				<!-- mesh[i].rotation.x += 0.01; -->
+				<!-- mesh[i].rotation.y += 0.01; -->
+			<!-- } -->
+			renderer.render( scene, camera );
+			stats.update();
+		}
+		animate();
+	</script>
+	</body>
+</html>

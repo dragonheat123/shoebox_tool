@@ -1,0 +1,9 @@
+-sample nodes format-
+[{"id":"0","roomtype":"outside","floorArea":"","innerWalls":[]},{"id":"1","roomtype":"normal","floorArea":"","innerWalls":[]},{"id":"2","roomtype":"normal","floorArea":"","innerWalls":[]}]
+
+-sample edges format-
+[{"edgeId":"0/2","nodes":["0","2"],"isAccessible":false,"adjWalls":[{"material":"cement","vertices":[["0","0"],["0","1"]],"wallLength":"1","wallArea":"2","thickness":"1","isStructural":true},{"material":"cement","vertices":[["0","1"],["1","1"]],"wallLength":"1","wallArea":"2","thickness":"1","isStructural":true}]},{"edgeId":"0/1","nodes":["0","1"],"isAccessible":false,"adjWalls":[{"material":"cement","vertices":[["2","4"],["4","4"]],"wallLength":"2","wallArea":"1","thickness":"1","isStructural":true}]},{"edgeId":"1/2","nodes":["1","2"],"isAccessible":false,"adjWalls":[{"material":"wood","vertices":[["5","5"],["6","6"]],"wallLength":"2","wallArea":"1","thickness":"1","isStructural":false}]}]
+
+use a formatter such as below for clarity
+https://jsonformatter.curiousconcept.com/
+

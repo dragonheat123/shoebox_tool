@@ -1,0 +1,61 @@
+@font-face {
+    font-family: trajan;
+    src: url('font/Trajan Pro Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: copperplate;
+    src: url('font/Copperplate Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: gotham;
+    src: url('font/GothamNarrow-Book.otf');
+}
+
+body {
+	font-family: gotham;
+	/* color: #fff; */
+	background: #31343d;
+	/* background-image: url(bg0.png); */
+	/* background-repeat: repeat-x;  */
+	/* background-attachment: fixed; */
+	/* background-position: bottom;  */
+}
+
+.navbar-brand{
+	font-family: trajan;
+}
+
+.container{
+	background:white;
+}
+#selection-progress a{
+	text-align: center;
+	padding-top: .75rem !important;
+	padding-bottom: .75rem !important;	
+	/* border-color:#000000; */
+	/* border-style:solid; */
+	/* border-radius:0 25% 25% 0; */
+}
+#selection-progress .first{
+}
+#selection-progress .last{
+	
+}
+#selection-progress .current{
+	
+}
+
+#selection-progress .field-arrow:before{
+	position:absolute;
+	content:'>';
+	right:0;
+	/* width:25px; */
+	/* border-color:#000000; */
+	/* border-style:solid; */
+	/* border-radius:0 300%300%0 /0 180%180%0; */
+	/* border-left:none; */
+	
+	/* border-top: 10px solid transparent; */
+	/* border-left: 15px solid red; */
+	/* border-bottom: 10px solid transparent; */
+}

@@ -1,0 +1,1 @@
+[{"id":"0","roomtype":"outside","floorArea":"","innerWalls":[]},{"id":"1","roomtype":"normal","floorArea":"","innerWalls":[]},{"id":"2","roomtype":"normal","floorArea":"","innerWalls":[]}]

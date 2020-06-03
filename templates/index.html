@@ -1,0 +1,39 @@
+<html>
+<head>
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+
+<body>
+	<div class="floor_plan" hidden>{{ name }}</div>
+	<svg id="svg1" style="margin: 0 auto; display: block;"></svg>
+</body>
+
+<script type="text/javascript">
+	var data = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML)
+
+	const svg = d3.select('#svg1')
+    .attr('width', 1080)
+    .attr('height', 720)
+    .style('background-color', 'black')
+    .call(d3.zoom().on("zoom", function () {
+              svg.attr("transform", d3.event.transform)
+      }))
+      .append("g");
+
+    function addLine(x1,y1,x2,y2,svg){
+	svg.append('line')
+	.style("stroke", "lightgreen")
+	.style("stroke-width", 1)
+	.attr("x1", x1)
+	.attr("y1", y1)
+	.attr("x2", x2)
+	.attr("y2", y2);
+	};
+
+	for (i=0; i<data.length; i++){
+		for (j=0; j<data[i].length-1; j++){
+			addLine(data[i][j][0],-data[i][j][1],data[i][j+1][0],-data[i][j+1][1],svg)
+		}
+	};
+</script>
+</html>

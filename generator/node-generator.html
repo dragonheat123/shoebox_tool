@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">	
+    <title>HAPPINESS DEVELOPMENTAL PLAN</title>
+	<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+	<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+	<link rel="stylesheet" href="dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+  </head>
+  <body>
+	<nav class="navbar navbar-expand navbar-light bg-light border-bottom">
+	  <a class="navbar-brand" href="#">Happiness Development Plan</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+
+	  <div class="collapse navbar-collapse" id="navbarsExample02">
+		<!-- <ul class="navbar-nav mr-auto"> -->
+		  <!-- <li class="nav-item active"> -->
+			<!-- <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a> -->
+		  <!-- </li> -->
+		  <!-- <li class="nav-item"> -->
+			<!-- <a class="nav-link" href="#">Link</a> -->
+		  <!-- </li> -->
+		<!-- </ul> -->
+		<!-- <form class="form-inline my-2 my-md-0"> -->
+		  <!-- <input class="form-control" type="text" placeholder="Search"> -->
+		<!-- </form> -->
+	  </div>
+	</nav>
+	
+	<div class="container my-4 pb-3">		
+	  <h4 class="my-3 pt-4">Edit Nodes</h4>
+		 <form id="nodeForm" class="needs-validation" novalidate="">
+			<!-- new node divs go here -->
+			
+		 </form>
+		<div class="form-group mt-3">
+			<input id="button_addNode" type="submit" class="btn btn-success" value="Add New Node">
+			<input id="button_generate" type="submit" class="btn btn-primary" value="Generate Output">
+			<!-- <a href="index" class="btn btn-default">Cancel</a> -->
+		</div>
+		<!-- <button id="button_generate" class="btn btn-primary btn-lg btn-block" type="submit">Done</button> -->
+		<form>
+		  <div class="form-group">
+			<label for="output">Output</label>
+			<textarea class="form-control" id="output" rows="3"></textarea>
+		  </div>
+		</form>
+	</div>
+  </body>
+  
+  
+  <script src="js/jquery-3.4.1.min.js"></script>
+  <script id="nodeTemplate" type="text/html">
+	<div id="node0" class="row border pt-3">
+	   
+	  <div class="col-3 mb-3">
+		<label class="small">Room Type</label>
+		<select class="custom-select d-block w-100 input_roomtype" required="">
+		  <option value="normal">Normal</option>
+		  <option value="storage">Storage</option>
+		  <option value="toilet">Water Closet</option>
+		  <option value="kitchen">Kitchen</option>
+		  <option value="service">Service Space</option>
+		</select>
+	  </div>
+	  <div class="col-3 mb-3">
+		<label class="small">Area (m²)</label>
+		<input type="number" class="form-control input_area" placeholder="" required="">
+		<div class="invalid-feedback">
+		  Please provide a number.
+		</div>
+	  </div>
+	  <div class="col-6">
+		<!-- todo when bored <button class="btn btn-info button_duplicateNode">Duplicate Node</button> -->
+		<button type="button" class="btn btn-danger button_deleteNode float-right">Delete Node</button>
+	  </div>
+	  
+	  <div class="col-12">
+		<div class="row m-1 mb-3 border">
+			<label class="col-12 text-muted small">Infill Walls</label>
+			<div class="col-12 wallForm">
+				<!-- new wall definitions go here -->
+			</div>
+		  <button type="button" class="btn-sm ml-auto button_addWall">+ new infill wall</button>
+		</div>
+		
+	  </div>
+	</div>
+  </script>
+  <script id="wallTemplate" type="text/html">
+	<div class="row wall">
+	  <div class="col-3 mb-3">
+		<label class="small">Material and Wall type</label>
+		<select class="custom-select custom-select-sm d-block w-100 input_material" required="">
+		  <option value="wood">Wood</option>
+		  <option value="water">Water</option>
+		  <option value="cement">Cement</option>
+		</select>
+		<select class="custom-select custom-select-sm d-block w-100 input_wallType" required="">
+		  <option value="structural">Structural</option>
+		  <option value="infill">Infill</option>
+		  <option value="facade">Facade</option>
+		</select>
+	  </div>
+	  <div class="col-2 mb-3">
+		<label class="small">Vertices</label>
+		<input type="text" class="form-control-sm d-md-block input_v1" placeholder="x1,y1" required="">
+		<div class="invalid-feedback">
+		  Vertex required.
+		</div>
+		<input type="text" class="form-control-sm d-md-block input_v2" placeholder="x2,y2" required="">
+		<div class="invalid-feedback">
+		  Vertex required.
+		</div>
+	  </div>
+	  <div class="col-2 mb-3">
+		<label class="small">Length (m)</label>
+		<input type="number" class="form-control-sm input_wallLength" placeholder="length" required="">
+		<div class="invalid-feedback">
+		  Length required.
+		</div>
+	  </div>
+	  <div class="col-2 mb-3">
+		<label class="small">Area (m²)</label>
+		<input type="number" class="form-control-sm input_wallArea" placeholder="area" required="">
+		<div class="invalid-feedback">
+		  Area required.
+		</div>
+	  </div>
+	  <div class="col-2 mb-3">
+		<label class="small">Thickness (m)</label>
+		<input type="number" class="form-control-sm input_thickness" placeholder="thickness" required="">
+		<div class="invalid-feedback">
+		  Thickness required.
+		</div>
+		<!-- <div class="form-check float-right"> -->
+		  <!-- <input class="form-check-input input_isStructural" type="checkbox" value="true"> -->
+		  <!-- <label class="form-check-label small">isStructural</label> -->
+		<!-- </div> -->
+		<!-- <div class="form-check float-right"> -->
+		  <!-- <input class="form-check-input input_isInfill" type="checkbox" value="true"> -->
+		  <!-- <label class="form-check-label small">isInfill</label> -->
+		<!-- </div> -->
+	  </div>
+	  <div class="col-1 my-auto text-right">
+		<button type="button" class="btn-sm button_duplicateWall">duplicate</button>
+		<button type="button" class="btn-sm button_deleteWall">delete</button>
+	  </div>
+	</div>
+  </script>
+  <script src="js/nodeGen.js"></script>
+</html>

@@ -1,0 +1,103 @@
+CPID,Version,Name,global_warming_potential_kg CO2-eq_c2g
+CP000,a02,"Rebar (40,60,75,80 Grade Steel)",1.26E+00
+CP001,a04,Ready Mixed Concrete (Straight Mix) (NWC 3000-4000psi),2.42E-01
+CP005,a04,Drywall (Natural Gypsum),3.64E-01
+CP006,a02,Drywall Joint Compound,2.60E-01
+CP008,a02,Hydrophilic Concrete Joint Waterstop,1.43E+00
+CP009,a03,Concrete Sealant,3.41E-01
+CP016,a02,Vapor barrier,3.11E+00
+CP017,a03,Structural Steel (I-beams),9.38E-01
+CP018,a05,Steel Bolt Assembly (General Use),2.80E+00
+CP019,a04,Steel Bolt Assembly (Structural),2.80E+00
+CP024,a02,Thin Film Intumescent Coating,5.51E+00
+CP025,a03,Oriented strand board,-1.34E+00
+CP026,a03,Composite Metal Decking,2.66E+00
+CP027,a04,Sub-Floor Smoothing Compound,6.18E-01
+CP029,a05,Cementitious Grouting,5.74E-01
+CP030,a02,Liquid-applied moisture barrier,9.59E-01
+CP031,a02,Concrete cork expansion joint,-3.14E-01
+CP032,a04,Flame retardant polyurethane foam window/door seal,3.18E+00
+CP033,a03,Firestop joint spray,2.46E+00
+CP036,a02,XPS Insulation (extruded polystyrene),2.48E+01
+CP037,a06,Kraft-faced Fiber Glass Batt Insulation,2.02E+00
+CP038,a02,Chromate Pretreatment for Steel,1.59E+04
+CP039,a03,Polyester Powder Coating,1.66E+01
+CP042,a05,Concrete Masonry Unit,2.18E-01
+CP043,a02,Aluminum Primer,1.80E+00
+CP044,a03,Anodized Aluminum Curtainwall Extrusion,6.57E+00
+CP048,a02,Elastic Facade Joint Sealant,2.94E+00
+CP051,a02,IGU Silicone Sealant,6.74E+00
+CP053,a02,Curtain wall seals - Rubber (ethylene propylene diene monomer) gasket,5.74E+00
+CP056,a04,Double Pane IGU,2.70E+00
+CP065,a02,Fluid-applied rubber asphalt roofing,6.23E-01
+CP069,a06,Roof edge flashing,3.85E+00
+CP071,a02,EPDM membrane roofing,2.83E+00
+CP072,a05,Exterior Door w/ IGU,3.20E+00
+CP074,a04,Metal Ceiling Tile,6.87E+00
+CP077,a03,Steel Studs,2.36E+00
+CP079,a02,Drywall Screws,2.88E+00
+CP081,a03,Low VOC Eggshell Acrylic Paint,1.93E+00
+CP084,a02,Drywall Joint Tape,1.67E+00
+CP086,a02,Drywall Acoustical Sealant,1.34E+00
+CP089,a02,Pipe Thread Sealant,3.74E+00
+CP090,a02,Steel Pipe Hanger,2.70E+00
+CP091,a03,Solvent Weld Soil and Waste Pipe,3.19E+00
+CP092,a05,Copper Piping,2.92E+00
+CP094,a04,Intumescent firestop sealant,2.82E+00
+CP095,a03,Galvanized Steel Ducts,2.40E+00
+CP096,a02,Carbon Steel Sprinkler Pipe,2.79E+00
+CP100,a03,Steel Conduit,2.82E+00
+CP103,a02,HDPE Municipal Water Pipe,2.68E+00
+CP108,a05,Type X Drywall,3.60E-01
+CP109,a05,Drywall (Mixed Gypsum),3.60E-01
+CP110,a04,Drywall (FGD),3.35E-01
+CP111,a02,Welded Wire Mesh Concrete Reinforcement,2.76E+00
+CP112,a03,Foundation waterproofing sheet membrane,9.84E-01
+CP113,a03,Foundation waterproofing sheet primer,2.86E+00
+CP114,a02,Foundation dampproofing,5.65E-01
+CP115,a05,Granular Fill,7.35E-02
+CP116,a03,Plywood,-1.53E+00
+CP117,a02,Particleboard,-1.20E+00
+CP118,a03,Wood Framing,-1.50E+00
+CP119,a02,Fire-retardant Treated/PT Lumber,-1.57E+00
+CP120,a04,EPS Insulation,3.04E+00
+CP121,a02,Spray Foam Insulation,3.08E+00
+CP123,a06,Mineral Fiber Batt Insulation,1.44E+00
+CP124,a02,Thermoplastic polyolefin (TPO) membrane roofing,3.48E+00
+CP125,a03,Polyvinyl chloride membrane roofing,3.98E+00
+CP126,a02,Membrane roofing adhesives,2.43E+00
+CP127,a04,Steel Door,2.76E+00
+CP128,a03,Medium Density Fiberboard (MDF),-9.23E-01
+CP129,a05,Acoustical Ceiling Panels (FGD Gypsum),4.12E-01
+CP130,a04,Acoustical Ceiling Panels (Natural Gypsum),4.09E-01
+CP131,a06,Acoustical Ceiling Panels (mineral fiber),1.14E+00
+CP132,a04,PVDF-Coated Aluminum Curtainwall Extrusion,1.68E+01
+CP133,a05,High performance coating (epoxy),1.13E+01
+CP134,a02,High Performance Coatings (Acrylic),1.87E+00
+CP146,a03,Acrylic Flooring Adhesive,1.51E+00
+CP147,a03,Epoxy flooring adhesive,4.56E+00
+CP148,a02,Polyurethane flooring adhesive,1.86E+00
+CP149,a02,Linoleum Flooring,9.56E-01
+CP150,a03,Vinyl Composition Tile,9.59E-01
+CP151,a03,Fluid-Applied Flooring,2.70E+00
+CP152,a04,Carpet Tile,8.78E+00
+CP155,a02,Hardwood Flooring (prefinished),-1.48E+00
+CP156,a02,Bamboo Flooring (engineered),1.12E+00
+CP157,a02,Cross Laminated Timber (CLT) (Engineered wood),-1.15E+00
+CP158,a02,Polypropylene Water Pipe,3.84E+00
+CP159,a02,PEX Water Pipe,4.81E+00
+CP160,a02,Pipe Insulation,3.49E+00
+CP161,a02,Pipe Insulation Adhesives,2.32E+00
+CP168,a04,Ready Mixed Concrete (LWC 3000-4000psi),3.66E-01
+CP169,a05,"Ready Mix Concrete (BF Slag) (3,000 - 4,000 psi)",1.42E-01
+CP170,a05,"Ready Mix Concrete (Fly Ash) (3,000 - 4,000 psi)",1.94E-01
+CP171,a03,Glulam,-1.43E+00
+CP172,a03,Glass Fiber Reinforced Polymer Decking,3.66E+00
+CP173,a03,Polycarbonate Cladding,5.77E+00
+CP174,a04,Structural Steel Cables,2.65E+00
+CP175,a02,Cast Iron Pipes,2.88E+00
+CP176,a04,Glass Fiber Reinforced Polymer Water Storage Tank,3.02E+00
+CP177,a02,Gypsum Spray Fireproofing,3.98E-01
+CP178,a03,Laminated Glass,1.74E+00
+CP179,a04,Fiber Glass Board Insulation,3.19E+00
+CP180,a02,PMMA Countertop,4.15E+00
