@@ -1,269 +1,106 @@
-import Floor_Layout_Syntax.Layout_graph as Layout
-import Floor_Layout_Syntax.UserInput as userInp
-import Floor_Layout_Syntax.Constraint as con
+import Floor_Layout_Syntax.Constants as Constants
+import Floor_Layout_Syntax.Layout_graph_v2 as Layout
+import Floor_Layout_Syntax.Building_v2 as Building
 import numpy as np
-import copy 
+import os
 from datetime import datetime
-import Floor_Layout_Syntax.Building as Building
-import random
-import jsonpickle
-import matplotlib.pyplot as plt
-import Floor_Layout_Syntax.Parcelized_layout_graph as PLayout
-#--------------replace this with root directoy path
-rootPath = 'D:\\repos\\next gen space syntax\\'
+import pprint
+import copy
 
+#Known issues:
+#-a unit type may not be generated if floorRange specified is too small and probability of demand is low
+# -> to fix: increase floorRange in Floor_Layout_Syntax.Constants
+#-positional demand
+
+#================================PATH VARIABLES=================================
+#--replace rootPath with root directory path
+#--windows ver
+rootPath = 'D:\\repos\\shoebox_tool\\'
 edges_jsonfilepath =rootPath+'testcases\\2_edges.txt'
 nodes_jsonfilepath =rootPath+'testcases\\2_nodes.txt'
+lcaDbPath=rootPath+'testcases\\Quartz_db_2019_Jan.csv'
+imageRootPath=rootPath+'images\\floorplan_base3.png'
 
 pos_path = rootPath+"floorplan_vectors\\node position_vectors_rot_offsets.txt"
 lengths_path = rootPath+"floorplan_vectors\\position_vector_lengths.txt"
 
-savefilePath=rootPath+'saved_results\\test\\'
-imageRootPath=rootPath+'images\\floorplan_base3.png'
+results_directory=rootPath+'saved_results\\'
+parcelation_db=results_directory+'parcelation_db'
+saveFilePath=results_directory+datetime.now().strftime("%Y-%m-%d_%H%M")+'\\'
+#loadFilePath=results_directory+"2020-03-23_1208"+"\\"
+#--------------------------------------------------------------------------------
+#--mac ver
+# rootPath = '/Users/zack_sutd/Dropbox (Personal)/SUTD/PostDoc/Space Syntax/next-gen-space-syntax/'
+# edges_jsonfilepath =rootPath+'testcases/2_edges.txt'
+# nodes_jsonfilepath =rootPath+'testcases/2_nodes.txt'
+# lcaDbPath=rootPath+'testcases/Quartz_db_2019_Jan.csv'
+# imageRootPath=rootPath+'images/floorplan_base3.png'
 
-unitTypes={
-            1:{
-            "roomCount":4,
-            "normal":2,
-            "toilet":1,
-            "storage":1
-            },
-            2:{
-            "roomCount":5,
-            "normal":3,
-            "toilet":1,
-            "storage":1
-            },
-            3:{
-            "roomCount":7,
-            "normal":4,
-            "toilet":2,
-            "storage":1
-            },
-            4:{
-            "roomCount":8,
-            "normal":5,
-            "toilet":2,
-            "storage":1
-            },
-            5:{
-            "roomCount":10,
-            "normal":6,
-            "toilet":2,
-            "storage":2
-            }
-        }
-unitTypeIndex=[1,2,3,4,5]
+# pos_path = rootPath+"floorplan_vectors/node position_vectors_rot_offsets.txt"
+# lengths_path = rootPath+"floorplan_vectors/position_vector_lengths.txt"
 
-doorsImplied={
-        'left':['1/14','1/15'],
-        'middle':['1/9','1/10'],
-        'right':['1/4','1/5']
-        }
-positions=["left", "middle" ,"right"]
-start=datetime.now()
-
-layout = Layout.Layout_graph()
-layout.importJSON(nodes_jsonfilepath, edges_jsonfilepath)
-layout.loadDrawVectors(pos_path, lengths_path,imageRootPath)
-
-##--------------------<LOAD SAVED FLOOR RESULT>
-#f= open(savefilePath+"17_happyDict.txt","r")
-#layoutz=jsonpickle.decode(f.read())
-#f.close()
-#[number of clusters][result index][]
-#print(layoutz['0'][0][0].getUnitDemandsFulfilled())
-#layoutz['0'].getUnitDemandsFulfilled()
-##--------------------</LOAD SAVED FLOOR RESULT>
+# results_directory=rootPath+'saved_results/'
+# saveFilePath=results_directory+datetime.now().strftime("%Y-%m-%d_%H%M")+'/'
+# loadFilePath=results_directory+"2020-03-23_1208"+"/"
+#--------------------------------------------------------------------------------
 
 
-##--------------------<LOAD SAVED BUILDING PARCELATION>
-##floorIndex=4
-#bldg=Building.Building(layout)
-#bldg.loadBuilding(savefilePath)
-#seq,dType=bldg.getElevationPermTypeSequence()
-##bldg.drawElevation(seq,dType)
-###bldg.drawFloorGraph(floorIndex)
-##bldg.drawAllFloorGraphs()
-##
-#bldg.fillEmptyClusters()
-#seq,dType=bldg.getElevationPermTypeSequence()
-#bldg.drawElevation(seq,dType)
-##bldg.drawFloorGraph(floorIndex)
-#bldg.drawAllFloorGraphs()
-##-------------------</LOAD SAVED BUILDING PARCELATION>
 
-####Test Draw
-#layout.drawTraversedPaths(traversedNodesIds=[1, 3, 4, 19, 18], traversedEdgesIds=['1/4', '4/3', '3/19', '19/18'])
-#for wall in layout.nodes['1'].getWalls():
-#    print (wall.material)
-#for node in layout.nodes:
-#    print ('node ',node," --> ",layout.nodes[node].getConnectedEdgeIDs())
-#for edge in layout.edges:
-#    print ('edge ',edge)
-
-#density = nx.density(layout.G)
-#print("Network density:", density)
-
-##=============================fcfs method
-#tempFloorplans=set()
-##first run
-#prefs=con.Constraint(['1/4','1/5','1/10','1/9'],{
-#        "roomCount":10,
-#        "toilet":0,
-#        "kitchen":0,
-#        "storeroom":0
-#        })
-#resultFloorplans=layout.generatePossibleUnits(prefs=prefs)
-#print("---first iteration---")
-#for res in resultFloorplans:
-#    print(res.doorSequence)
-#    print(res.unitSequence)
-#    print(res.unusedToOverallRatio)
-#    
-##second run
-#prefs=con.Constraint(['1/4','1/5','1/10'],{
-#        "roomCount":10,
-#        "toilet":0,
-#        "kitchen":0,
-#        "storeroom":0
-#        })
-#for floorplan in resultFloorplans:
-#    tempFloorplans.update(layout.generatePossibleUnits(prefs=prefs,floorplan=floorplan))
-#if len(tempFloorplans)>0:
-#    resultFloorplans=set(tempFloorplans)
-#else:
-#    print("Iteration ended at.. ")
-#    
-#print("\n---final results---")
-#for res in resultFloorplans:
-#    print(res.doorSequence)
-#    layout.testFloorplanScore(res)
-#===================================================
-#doorEdges=layout.doorEdgeIds
-#prefs=[]
-##--test prefs
-#prefs.append(con.Constraint(2,0.75,['1/15'],unitTypes[2]))
-#prefs.append(con.Constraint(3,0.2,['1/14'],unitTypes[1]))
-##prefs.append(con.Constraint(4,0.5,['1/10'],unitTypes[0]))
-#happyRes,utilRes=layout.generateParcelizationPermutations(str(0),prefs,savefilePath) #function returns tuple of happy and utiliy result lists
-
-####-------------------------------------<MAIN ALORITHM>----------------------------------
-##<LOAD DEMAND DISTRIBTUION>
-hdbDistribution = [0.133, 0.275, 0.211, 0.124, 0.147, 0.11] # from HDB paper
-posDistribution = [0.1, 0.2, 0.7]
-floorLevels = [[1,5],[6,10], [11,15], [16,20], [21,25], [26,30]]
-u = userInp.User_input(numFloors=30, numDoors=6, positions=positions, unitTypes=unitTypeIndex, levelRanges=floorLevels, positionRanges=[[1, 2],[3,4] ,[5, 6]], floorDistribution=hdbDistribution, positionDistribution=None) # from HDB paper
-df=u.genFakeUnitTypePrefs(numPeople=500, binned=True, RAYformat=False, savefilePath=savefilePath)
-#binned true-p and f and false-p and f,
-
-
-prefDf=copy.copy(u.binnedBldg)  #dataframe which contains list of user demands for cells
-probDf=u.calcBinnedProb(prefDf) #dataframe which contains probability of unit occurring for cells
-#print(probDf)
-#print(prefDf)
-##</LOAD DEMAND DISTRIBTUION>
-
-floorRanges=prefDf.index.values.tolist()
-#print ('rows ' ,floorRanges)
-#print ('cols ' ,prefDf.keys())
-leftovers={}
-buildingResult={}
-
-###<PRETTY PRINT DATAFRAME>
-###x=np.arange(len(unitTypes))
-##axes = plt.gca()
-##width=0.8
-##unitTypeLegend=['T1','T2','T3','T4','T5']
-##color=[[0.031, 0.612, 0.533], [0.643, 0.137, 0.506], [1, 0.773, 0.235], [0.922, 0.329, 0.467], [0.388, 0.647, 0.329]]
-##fig, axs = plt.subplots(ncols=3,nrows=6,subplot_kw={'xticks': [],'yticks': []})
-##for row in reversed(range(len(floorRanges))):
-##    for col in range(len(positions)):
-##        demandCount=[0]*5
-##        for n in prefDf.loc[floorRanges[row],positions[col]]:
-##            demandCount[n-1]+=1
-##        ax=axs[len(floorRanges)-1-row,col]  #plotting in reverse to reflect bottom up structure of a building
-##        ax.set_ylim([0,1])
-##        unitProbability=probDf.loc[floorRanges[row],positions[col]]
-##        rects=ax.bar(unitTypeLegend,unitProbability,width,color=color)
-###        if row==len(floorRanges)-1 and col<3:
-###            ax.set_title(positions[col])
-###        if col==0:
-###            ax.set_ylabel(floorRanges[row])
-###fig.tight_layout()
-###plt.show()
-###</PRETTY PRINT DATAFRAME>
-#
-##<PARCELIZATION>
-##run permutation algorithm per floor in the dataframe
-for fR in floorRanges:
-    floorIndex=fR.split('-',1)  #[0]-> start index; [1]-> end index
-    floorLeftovers={}
-
-    #Iterating through floors in range
-    #-----------------------------------------------
-    for floor in range(int(floorIndex[0]),int(floorIndex[1])+1):
-        floorPrefs=[]
-        for generalLocation in prefDf.keys():
-            for location in doorsImplied[generalLocation]:
-                unitPreferences=prefDf.loc[fR,generalLocation]
-                #-would be nice to have a switch case here to increase readability
-                if len(unitPreferences)<1:
-                    #since no demands, check if there are leftover demands in this floor range
-                    if generalLocation in floorLeftovers:
-                        floorPrefs.append(floorLeftovers[generalLocation][0])
-                        if len(floorLeftovers[generalLocation])<1: del floorLeftovers[generalLocation]
-                    else:
-                        continue
-                elif unitPreferences[0]==0:
-                    unitPreferences.remove(0)
-                    if generalLocation in floorLeftovers:
-                        floorPrefs.append(floorLeftovers[generalLocation][0])
-                        if len(floorLeftovers[generalLocation])<1: del floorLeftovers[generalLocation]
-                    else:
-                        continue
-                else:
-                    unitProbability=probDf.loc[fR,generalLocation]
-                    unit=np.random.choice(a=unitTypeIndex,p=unitProbability)
-                    floorPrefs.append(con.Constraint(roomType=unit,prefWeight=1,prefDoors=doorsImplied[generalLocation],roomConstraints=unitTypes[unit]))
-                    unitPreferences.remove(unit)
-                    probDf.loc[fR,generalLocation]=u.calcProbFromPref(unitPreferences)
-
-        #Process permutation for demands on floor
-        #-----------------------------------------------
-        happyRes,utilRes=layout.generateParcelizationPermutations(str(floor),floorPrefs,savefilePath) #function returns tuple of happy and utiliy result lists
-
-        #Selection of the layout and collating leftovers
-        #-----------------------------------------------
-        happyRes=random.choice(happyRes) #done randomly for now
-        buildingResult[floor]=happyRes[0]
-
-        exportPath=savefilePath+'bldg.txt'
-        f= open(exportPath,"w+")
-        f.write(jsonpickle.encode(buildingResult))
-        f.close()
-
-        #utilRes=random.choice(utilRes) #ignore for now
-        #the results are a tuple of (layout,demands,leftover index); so the next line checks if there are leftovers
-        if happyRes[2]!=None:
-            for i in range(happyRes[2],len(happyRes[1])):
-                if generalLocation in floorLeftovers:
-                    floorLeftovers[generalLocation].append(happyRes[1][i])
-                else:
-                    floorLeftovers[generalLocation]=[happyRes[1][i]]
-    leftovers[fR]=floorLeftovers
-    exportPath=savefilePath+'left.txt'
-    f= open(exportPath,"w+")
-    f.write(jsonpickle.encode(leftovers))
-    f.close()
-##</PARCELIZATION>
-####-------------------------------------</MAIN ALORITHM>----------------------------------
-
-#layout.printSavedResults(str(1),savefilePath)
-#parcelizedLayout=layout.getRandomSavedResultLayout(str(2),savefilePath)
-#print(parcelizedLayout.unitSequence)
+#==================================MAIN PROGRAM==================================
+def main():
+    #**NOTE: Either generate new -OR- load parcelation
+    #=================================================
+    #---generate and save new building parcelation---
+    #=================================================
+    demandProjection={'2020':[0.10239081, 0.18119785, 0.38637962, 0.23033209, 0.09969962],
+                      '2040':[0.14256652, 0.17999695, 0.35843778, 0.22383094, 0.0951678 ],
+                      '2060':[0.18699427, 0.17764625, 0.33543391, 0.21086532, 0.08906024],
+                      '2080':[0.22413532, 0.17169741, 0.31204038, 0.2042384 , 0.08788849]}
     
-print('Start Time: ')
-print(start)
-print('End Time: ')
-print(datetime.now())
+    layout = Layout.Layout_graph()
+    layout.importJSON(nodes_jsonfilepath, edges_jsonfilepath,lcaDbPath)
+    layout.loadDrawVectors(pos_path, lengths_path,imageRootPath)
+    building=Building.Building(layout)
+    
+    for year,demand in demandProjection.items():
+        print("===processing year "+year+" demands===")
+        b=copy.deepcopy(building)
+        d={'1-30':np.array(demand)}
+        b.parcelate(d)
+    
+        saveFilePath=saveFilePath+year+'/'
+        os.makedirs(saveFilePath, exist_ok=True) #creates a new folder at saveFilePath for results
+        b.save(saveFilePath)
+        print("---successfully saved results for year "+year+"---")
+    
+    #=================================================
+    #---load parcelated building---
+    #=================================================
+    # building=Building.loadBuilding(loadFilePath)
+    
+    ##=================DRAW RESULTS====================
+    building.drawDemographicModelChart()   #plot of demographic demand for unit types
+    building.drawComparisonChart()  #compares unit distribution to demographic demand
+    building.drawElevation()
+    building.drawFloorGraph(3)
+    building.drawAllFloorGraphs()
+    
+    ##====================COMPARISON===================
+    b1=Building.loadBuilding(results_directory+"2020\\")
+    b2=Building.loadBuilding(results_directory+"2040\\")
+    b1.drawComparisonChart()
+    b2.drawComparisonChart()
+    pp = pprint.PrettyPrinter(indent=4)
+    
+    floor=12
+    print("--Floor "+str(floor)+" changes:")
+    pp.pprint(b1.compareFloorWallChanges(b2,floor))
+    b1.drawFloorGraph(floor)
+    b2.drawFloorGraph(floor)
+    
+    ##--Cumulative floor changes of the entire building
+    print("--Cumulative changes:")
+    pp.pprint(b1.compareBuildingWallChanges(b2))
+    
+if __name__== "__main__":
+    main()
