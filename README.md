@@ -1,5 +1,5 @@
-# next-gen-space-syntax
+# shoebox-tool
 
-TODOs:
-- Nodes and edges csv
-- Parser in/out
+run python app.py
+
+rhino and grasshopper files in Test_curves folder
