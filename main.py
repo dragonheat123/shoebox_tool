@@ -1,6 +1,6 @@
 import Floor_Layout_Syntax.Constants as Constants
-import Floor_Layout_Syntax.Layout_graph_v2 as Layout
-import Floor_Layout_Syntax.Building_v2 as Building
+import Floor_Layout_Syntax.Layout_graph as Layout
+import Floor_Layout_Syntax.Building as Building
 import numpy as np
 import os
 from datetime import datetime
