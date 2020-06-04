@@ -8,70 +8,70 @@ Data structure in json follows
 ### Nodes
 ```js
 [
-    {
-        "id":"0",		//id 0 is reserved for outside node
-        "roomtype":"outside",
-        "floorArea":"",
-        "innerWalls":[]	//placeholder for future reuquirements
-    },
-    {
-        "id":"1",
-        "roomtype":"normal",
-        "floorArea":"",
-        "innerWalls":[]
-    },
-    {
-        "id":"2",
-        "roomtype":"normal",
-        "floorArea":"",
-        "innerWalls":[]
-    }
+	{
+		"id":"0",		//id 0 is reserved for outside node
+		"roomtype":"outside",
+		"floorArea":"",
+		"innerWalls":[]	//placeholder for future reuquirements
+	},
+	{
+		"id":"1",
+		"roomtype":"normal",
+		"floorArea":"",
+		"innerWalls":[]
+	},
+	{
+		"id":"2",
+		"roomtype":"normal",
+		"floorArea":"",
+		"innerWalls":[]
+	}
 ]
 ```
 ### Edges
 ```js
 [
-    {
-        "edgeId":"0/2",
-        "isAccessible":false,   //isTraversable edge
-        "adjWalls":[    
-				{
-					"matID":"SP20",
-					"vertices":[[0,0],[0,1]],   //length
-    				"thickness":"1",
-					"composition":[10,90]    // [0]=>structural [1]=>infill
+	{
+		"edgeId":"0/2",
+		"isAccessible":false,   //isTraversable edge
+		"adjWalls":[    
+			{
+					"matID":"SP20",				// id from lcadb
+					"vertices":[[0,0],[0,1]],   // [x1,y1],[x2,y2]
+					"thickness":"1",
+					"composition":[10,90]		// [0]=>structural [1]=>infill
 				},
 				{
 					"matID":"SP20",
-    				"vertices":[[0,1],[1,1]],
-    				"thickness":"1",
-    				"composition":[10,90]
+					"vertices":[[0,1],[1,1]],
+					"thickness":"1",
+					"composition":[10,90]
 				}
-				]
-    },	
+			]
+	},	
 	{
-	    "edgeId":"0/1",
-	    "isAccessible":false,
-	    "adjWalls":[
-	            {
+		"edgeId":"0/1",
+		"isAccessible":false,
+		"adjWalls":[
+				{
 					"matID":"SP20",
-	                "vertices":[[2,4],[4,4]],
-    				"thickness":"1",
+					"vertices":[[2,4],[4,4]],
+					"thickness":"1",
 					"composition":[10,20]
-	            }
-	       ]
+				}
+			]
 	},
 	{
-	    "edgeId":"1/2",
-	    "isAccessible":true,
-	    "adjWalls":[
-    	        {
-        	        "material":"wood",
-        	        "vertices":[[5,5],[6,6]],
-    				"thickness":"1",
-    				"composition":[10,20]
-    	        }
-            ]
+		"edgeId":"1/2",
+		"isAccessible":true,
+		"adjWalls":[
+				{
+					"matID":"SP20",
+					"vertices":[[5,5],[6,6]],
+					"thickness":"1",
+					"composition":[10,20]
+				}
+			]
 	}
 ]
 ```
