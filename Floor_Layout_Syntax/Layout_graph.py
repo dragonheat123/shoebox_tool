@@ -32,11 +32,11 @@ class Layout_graph:
         self.serviceNodeIds = set()
         self.doorEdgeIds = []   #ORDER MATTERS- used as door position reference by parcelized results
 #        self.elevationNodes = ['18','19',-2,'20','21','22',-2,'23','24','25',-2,'26','27'] #rooms facing the outside (-2 are recesses)
-        self.elevationNodes = ['18','19','20','21','22','23','24','25','26','27'] 
-        self.G = nx.Graph()  # initialising empty networkx graph
-        self.drawPos={}
-        self.drawEdges = []
-        self.img=None
+        # self.elevationNodes = ['18','19','20','21','22','23','24','25','26','27'] 
+        # self.G = nx.Graph()  # initialising empty networkx graph
+        # self.drawPos={}
+        # self.drawEdges = []
+        # self.img=None
         
         self.roomCount={
         'normal':0,
@@ -44,7 +44,7 @@ class Layout_graph:
         'storage':0
         }
         
-        self.colorPool=[[1, 0.627, 0.235], [0.031, 0.612, 0.533], [0.643, 0.137, 0.506], [1, 0.773, 0.235], [0.922, 0.329, 0.467], [0.388, 0.647, 0.329]]
+        # self.colorPool=[[1, 0.627, 0.235], [0.031, 0.612, 0.533], [0.643, 0.137, 0.506], [1, 0.773, 0.235], [0.922, 0.329, 0.467], [0.388, 0.647, 0.329]]
         self.unitCombinations={}
         self.combinationResult={}
         self.structuralGwp=0.0
@@ -58,27 +58,45 @@ class Layout_graph:
             self.serviceNodeIds.add(newNodeID)
         elif (self.nodes[newNodeID].roomtype!="outside"):
             self.roomCount[self.nodes[newNodeID].roomtype]+=1
-        self.G.add_node(newNodeID) #adds node to networkx graph
 
 
-    def addEdgeByID (self, edgeID, isAccessible, isDoorway, adjWalls): #node is specified by their name
-        nodes = edgeID.split("/")
-        nodeID1=nodes[0]
-        nodeID2=nodes[1]
+    def addEdgeById (self, edgeId, isAccessible, adjWalls): #node is specified by their name
+        nodes = edgeId.split("/")
+        nodeId1=nodes[0]
+        nodeId2=nodes[1]
         
         # id edge nodes do not yet exist, add to self.nodes
-        if nodeID1 not in self.nodes.keys(): 
-            self.addNode (newNodeID=nodeID1)
-            print("Node "+str(nodeID1)+" not found! Created new node")
-        if nodeID2 not in self.nodes.keys(): 
-            self.addNode (newNodeID=nodeID2)
-            print("Node "+str(nodeID2)+" not found! Created new node")
+        if nodeId1 not in self.nodes.keys(): 
+            self.addNode (newNodeID=nodeId1)
+            print("Node "+str(nodeId1)+" not found! Created new node")
+        if nodeId2 not in self.nodes.keys(): 
+            self.addNode (newNodeID=nodeId2)
+            print("Node "+str(nodeId2)+" not found! Created new node")
+            
+        
+        isDoorway = False
+        if nodeId1 in self.serviceNodeIds and int(nodeId2) != 0:
+            isDoorway = True
+            self.nodes[nodeId2].entranceEdge=edgeId #TODO: change to list or set in future if multiple entrances in node
+            self.nodes[nodeId2].isEntrance=True
+            self.doorEdgeIds.append(edgeId)
+        if nodeId2 in self.serviceNodeIds and int(nodeId1) != 0:
+            if isDoorway: 
+                self.nodes[nodeId2].entranceEdge = None 
+                self.nodes[nodeId2].isEntrance = False
+                isDoorway = False
+                self.doorEdgeIds.pop()
+            else:
+                isDoorway = True
+                self.nodes[nodeId1].entranceEdge=edgeId #TODO: change to list or set in future if multiple entrances in node
+                self.nodes[nodeId1].isEntrance=True
+                self.doorEdgeIds.append(edgeId)
 
-        e = edge.Edge(self.nodes[nodeID1], self.nodes[nodeID2])
+        e = edge.Edge(self.nodes[nodeId1], self.nodes[nodeId2])
         e.isAccessible=isAccessible
         e.isDoorway=isDoorway
         e.adjWalls=adjWalls
-        e.id=edgeID
+        e.id=edgeId
         
         #TODO: make this definition more robust
         #-traversable means that the nodes (rooms) can be connected to form a unit
@@ -91,47 +109,39 @@ class Layout_graph:
                 if t in adjWalls:
                     isTraversable=True
                     break
-        if isDoorway:
-            self.nodes[nodeID2].entranceEdge=edgeID #TODO: change to list or set in future if multiple entrances in node
-            self.nodes[nodeID2].isEntrance=True
             
-        self.edges[edgeID]=e
+        self.edges[edgeId]=e
         if isTraversable:
-            self.nodes[nodeID1].traversableEdgeIds.add(edgeID)
-            self.nodes[nodeID2].traversableEdgeIds.add(edgeID)
+            self.nodes[nodeId1].traversableEdgeIds.add(edgeId)
+            self.nodes[nodeId2].traversableEdgeIds.add(edgeId)
         else:
-            self.nodes[nodeID1].nonTraversableEdgeIds.add(edgeID)
-            self.nodes[nodeID2].nonTraversableEdgeIds.add(edgeID)            
+            self.nodes[nodeId1].nonTraversableEdgeIds.add(edgeId)
+            self.nodes[nodeId2].nonTraversableEdgeIds.add(edgeId)            
         #reference to edges
-        self.nodes[nodeID1].connectedEdges.append(e) #update attribute list of edges connected to node1
-        self.nodes[nodeID2].connectedEdges.append(e)  #update attribute list of edges connected to node2
+        self.nodes[nodeId1].connectedEdges.append(e) #update attribute list of edges connected to node1
+        self.nodes[nodeId2].connectedEdges.append(e)  #update attribute list of edges connected to node2
         #-------
 
-        self.G.add_edge(nodeID1, nodeID2) #adds edge to networkx graph
 
-    def removeNode(self, nodeID):
-        del self.nodes[nodeID]
-        self.G.remove_node(nodeID)
+    def removeNode(self, nodeId):
+        del self.nodes[nodeId]
 
-    def removeEdgeByNodes(self, nodeID1, nodeID2):
+    def removeEdgeByNodes(self, nodeId1, nodeId2):
         #todo: error catching
-        if nodeID1 < nodeID2:
-            del self.edges[nodeID1+'/'+nodeID2]
-            self.G.remove_edge(nodeID1, nodeID2)
+        if nodeId1 < nodeId2:
+            del self.edges[nodeId1+'/'+nodeId2]
         else:
-            del self.edges[nodeID2+'/'+nodeID1]
-            self.G.remove_edge(nodeID2, nodeID1)
+            del self.edges[nodeId2+'/'+nodeId1]
 
-    def removeEdgeByID (self, edgeID):
-        del self.edges[edgeID]
-        nodes = edgeID.split("/")
-        self.G.remove_edge(nodes[0], nodes[1])
+    def removeEdgeByID (self, edgeId):
+        del self.edges[edgeId]
+        nodes = edgeId.split("/")
 
-    def getEdgeByNodes(self, nodeID1, nodeID2):
-        if nodeID1 < nodeID2:
-            key=nodeID1+'/'+nodeID2
+    def getEdgeByNodes(self, nodeId1, nodeId2):
+        if nodeId1 < nodeId2:
+            key=nodeId1+'/'+nodeId2
         else:
-            key=nodeID2+'/'+nodeID1
+            key=nodeId2+'/'+nodeId1
         if key in self.edges:
             return self.edges[key]
         else:
@@ -161,10 +171,11 @@ class Layout_graph:
                 else:
                     adjacentWalls[inWall['wallType']].append(wall.Wall(vertices=inWall['vertices'], materialID='CP032', thickness=inWall['thickness'],
                            wallType=inWall['wallType'], wallArea=inWall['wallArea'], wallLength=inWall['wallLength'],lcaDb=tempDb))
-            if e['isDoorway']:
-                self.doorEdgeIds.append(e['edgeId'])
-            self.addEdgeByID(edgeID=e['edgeId'], isAccessible=e['isAccessible'], isDoorway=e['isDoorway'], adjWalls=adjacentWalls)
+            # if e['isDoorway']:
+            #     self.doorEdgeIds.append(e['edgeId'])
+            self.addEdgeById(edgeId=e['edgeId'], isAccessible=e['isAccessible'], adjWalls=adjacentWalls)
         #TODO: following function may be dynamic so consider better lcaDb system and structure hierarchy
+        print(self.doorEdgeIds)
         self.getStructuralGwp(tempDb)
 
     def importResultJson(self,importFilePath):
@@ -271,7 +282,7 @@ class Layout_graph:
                 if 'normal' in cluster.properties and 'toilet' in cluster.properties and 'storage' in cluster.properties:
                     unit=p_unit.Unit(doorwayId=cluster.doorIds[0],constraint=con.Constraint(roomType=cluster.properties['normal']-1,prefWeight=1,prefDoors=cluster.doorIds,roomConstraints=cluster.properties),
                                      connectedNodeIds=cluster.connectedNodeIds,connectedEdgeIds=cluster.connectedEdgeIds)
-                    floorplan.addUnit(unit,self.doorEdgeIds,self.elevationNodes,cluster.doorIds,True)
+                    floorplan.addUnit(unit,self.doorEdgeIds,cluster.doorIds,True)
                     floorplan.occupiedNodes.update(cluster.connectedNodeIds)
                     self.testFloorplanScore(floorplan)
         return floorplan
@@ -348,7 +359,7 @@ class Layout_graph:
                         traversedEdgeIds.add(e.getEdgeId())
             unit=p_unit.Unit(doorwayId=c_occupiedDoorIds[0],constraint=criteria,connectedNodeIds=traversedNodeIds,connectedEdgeIds=traversedEdgeIds)
             newFloorplan=copy.deepcopy(floorplan)
-            newFloorplan.addUnit(unit,self.doorEdgeIds,self.elevationNodes,c_occupiedDoorIds)
+            newFloorplan.addUnit(unit,self.doorEdgeIds,c_occupiedDoorIds)
             newFloorplan.occupiedNodes.update(traversedNodeIds)
 
 #            print('=====VALID UNIT====')
@@ -517,87 +528,87 @@ class Layout_graph:
         
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    def loadDrawVectors(self,posPath,vecLengthsPath,imageRootPath):
-        self.drawPos = {}
-        self.drawEdges = []
-        #==========================================================================================================
-        #### INSTRUCTIONS FOR LOADING BASE FLOOR-PLAN .PNG IMAGE
-        #### image needs to have following dims: 3852pixels(widtth) * 1186 pixels(height)
-        #### scale at 1:150 on sheet size A3 when printing to PDF from Rhino then export to PNG from PDF in preview
-        #### sometimes the image might need rotating by 180 deg
-        # ==========================================================================================================
-#        fig, ax = plt.subplots(figsize=(2 * 12.83, 2 * 3.94))
-        self.img = mpimg.imread(imageRootPath)
-        height, width = self.img.shape[:2]
-        origin = [height/2, width/2]
-        with open(posPath) as csvpos :
-            csv_reader = csv.reader(csvpos, delimiter=',')
-            positions=[]
-            for row in csv_reader:
-                coord = []
-                for s in row:
-                    coord.append(s.translate({ord('{'):None, ord('}'):None}))
-                positions.append([float(x) for x in coord])
-        for i, node in enumerate (positions):
-            self.drawPos[str(i+1)] = [origin[1]+node[0]/12.8, origin[0]+node[1]/12.8]
+#     def loadDrawVectors(self,posPath,vecLengthsPath,imageRootPath):
+#         self.drawPos = {}
+#         self.drawEdges = []
+#         #==========================================================================================================
+#         #### INSTRUCTIONS FOR LOADING BASE FLOOR-PLAN .PNG IMAGE
+#         #### image needs to have following dims: 3852pixels(widtth) * 1186 pixels(height)
+#         #### scale at 1:150 on sheet size A3 when printing to PDF from Rhino then export to PNG from PDF in preview
+#         #### sometimes the image might need rotating by 180 deg
+#         # ==========================================================================================================
+# #        fig, ax = plt.subplots(figsize=(2 * 12.83, 2 * 3.94))
+#         self.img = mpimg.imread(imageRootPath)
+#         height, width = self.img.shape[:2]
+#         origin = [height/2, width/2]
+#         with open(posPath) as csvpos :
+#             csv_reader = csv.reader(csvpos, delimiter=',')
+#             positions=[]
+#             for row in csv_reader:
+#                 coord = []
+#                 for s in row:
+#                     coord.append(s.translate({ord('{'):None, ord('}'):None}))
+#                 positions.append([float(x) for x in coord])
+#         for i, node in enumerate (positions):
+#             self.drawPos[str(i+1)] = [origin[1]+node[0]/12.8, origin[0]+node[1]/12.8]
 
-        # adds outside node
-        self.drawPos['0'] = [0, self.drawPos['1'][1]] # TODO: replace this hardcoded position for Node 0
-        for e in self.G.edges:
-            if ('0' in e) == False:
-                self.drawEdges.append(e)
+#         # adds outside node
+#         self.drawPos['0'] = [0, self.drawPos['1'][1]] # TODO: replace this hardcoded position for Node 0
+#         for e in self.G.edges:
+#             if ('0' in e) == False:
+#                 self.drawEdges.append(e)
 
-    def drawTraversedPaths(self, layout=None, traversedEdgesIds=None, traversedNodesIds=None):
-        fig, ax = plt.subplots(figsize=(2 * 12.83, 2 * 3.94))
+#     def drawTraversedPaths(self, layout=None, traversedEdgesIds=None, traversedNodesIds=None):
+#         fig, ax = plt.subplots(figsize=(2 * 12.83, 2 * 3.94))
         
-        plt.imshow(self.img, aspect='equal', origin='lower')
-        plt.subplots_adjust(left = 0.03)
-        fig.tight_layout(pad = 0)
+#         plt.imshow(self.img, aspect='equal', origin='lower')
+#         plt.subplots_adjust(left = 0.03)
+#         fig.tight_layout(pad = 0)
         
-        labels = {}
-        for i in range (0, len(self.G.nodes)):
-            if i==0: labels[str(i)]=''
-            else:labels[str(i)]=str(i)
+#         labels = {}
+#         for i in range (0, len(self.G.nodes)):
+#             if i==0: labels[str(i)]=''
+#             else:labels[str(i)]=str(i)
 
-        nodes = nx.draw_networkx_nodes(self.G, nodelist=[str(x) for x in range(1,self.G.number_of_nodes())] ,pos=self.drawPos,  node_color='grey', alpha=0.8, edge_color='b')
-        edges = nx.draw_networkx_edges(self.G, self.drawPos, edgelist=self.drawEdges, width=1, alpha=0.5)
+#         nodes = nx.draw_networkx_nodes(self.G, nodelist=[str(x) for x in range(1,self.G.number_of_nodes())] ,pos=self.drawPos,  node_color='grey', alpha=0.8, edge_color='b')
+#         edges = nx.draw_networkx_edges(self.G, self.drawPos, edgelist=self.drawEdges, width=1, alpha=0.5)
 
-        nx.draw_networkx_labels(self.G, pos=self.drawPos, labels=labels, font_size=8, font_weight='bold')
+#         nx.draw_networkx_labels(self.G, pos=self.drawPos, labels=labels, font_size=8, font_weight='bold')
         
 
-        if traversedEdgesIds!=None:
-            travEdgeIds_G = []
-            for i, travEdge in enumerate(traversedEdgesIds):
-                nodeID1 = travEdge.split("/")[0]
-                nodeID2 = travEdge.split("/")[1]
-                e_G = [str(nodeID1), str(nodeID2)]
-                travEdgeIds_G.append(e_G)
-                a = abs(0.8-(1/(i+1)))
-                nx.draw_networkx_edges(self.G, self.drawPos, edgelist=[e_G ], width=3, edge_color='r', alpha=1)
-                #plt.pause(0.5)
+#         if traversedEdgesIds!=None:
+#             travEdgeIds_G = []
+#             for i, travEdge in enumerate(traversedEdgesIds):
+#                 nodeId1 = travEdge.split("/")[0]
+#                 nodeId2 = travEdge.split("/")[1]
+#                 e_G = [str(nodeId1), str(nodeId2)]
+#                 travEdgeIds_G.append(e_G)
+#                 a = abs(0.8-(1/(i+1)))
+#                 nx.draw_networkx_edges(self.G, self.drawPos, edgelist=[e_G ], width=3, edge_color='r', alpha=1)
+#                 #plt.pause(0.5)
 
-            #nx.draw_networkx_edges(self.G, pos, edgelist=travEdgeIds_G, width=2, edge_color='r')
-        if traversedNodesIds != None:
-            #make sure supplied node indices are string format
-            travNodeIds_G=[]
-            for tNode in traversedNodesIds:
-                travNodeIds_G.append(str(tNode))
+#             #nx.draw_networkx_edges(self.G, pos, edgelist=travEdgeIds_G, width=2, edge_color='r')
+#         if traversedNodesIds != None:
+#             #make sure supplied node indices are string format
+#             travNodeIds_G=[]
+#             for tNode in traversedNodesIds:
+#                 travNodeIds_G.append(str(tNode))
 
-            nx.draw_networkx_nodes(self.G, pos=self.drawPos, nodelist=travNodeIds_G, font_size=8, node_color='r', alpha=1, edge_color='black',node_size=670)
+#             nx.draw_networkx_nodes(self.G, pos=self.drawPos, nodelist=travNodeIds_G, font_size=8, node_color='r', alpha=1, edge_color='black',node_size=670)
 
-        if layout!=None:
-#            poolLength=len(self.colorPool)
-            for unit in layout.units:
-                n=unit.connectedNodeIds
-                e=unit.connectedEdgeIds
-                edgesToDraw=[]
-                for pair in e:
-                    edgesToDraw.append(pair.split('/',1))
-                c=colors.to_hex(unit.getUnitColorType())
-                nx.draw_networkx_nodes(self.G, pos=self.drawPos, nodelist=n, font_size=8, node_color=c, alpha=1, edge_color='black',node_size=670)
-                nx.draw_networkx_edges(self.G, self.drawPos, edgelist=edgesToDraw, width=3, edge_color=c, alpha=1)
-        plt.show()
-        return nodes, edges
+#         if layout!=None:
+# #            poolLength=len(self.colorPool)
+#             for unit in layout.units:
+#                 n=unit.connectedNodeIds
+#                 e=unit.connectedEdgeIds
+#                 edgesToDraw=[]
+#                 for pair in e:
+#                     edgesToDraw.append(pair.split('/',1))
+#                 c=colors.to_hex(unit.getUnitColorType())
+#                 nx.draw_networkx_nodes(self.G, pos=self.drawPos, nodelist=n, font_size=8, node_color=c, alpha=1, edge_color='black',node_size=670)
+#                 nx.draw_networkx_edges(self.G, self.drawPos, edgelist=edgesToDraw, width=3, edge_color=c, alpha=1)
+#         plt.show()
+#         return nodes, edges
     
     def getStructuralGwp (self,lcaDb=None): # returns total GWP for structural walls and floor in layout #
         if lcaDb!=None:

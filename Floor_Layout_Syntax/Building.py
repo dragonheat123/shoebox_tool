@@ -2,7 +2,7 @@ import Floor_Layout_Syntax.Constants as Constants
 import Floor_Layout_Syntax.GeneticAlgorithm as GA
 import numpy as np
 from datetime import datetime
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 # import matplotlib.patches as patches
 # import seaborn.apionly as sns
 # from matplotlib.colors import LinearSegmentedColormap
@@ -162,58 +162,58 @@ class Building:
             parcelized=self.parcelizedBuilding[floorIndex]
             self.layoutGraph.drawTraversedPaths(parcelized)
             
-    def drawElevation (self, displayType='ELEVATION', saveFig=False):
-        elevationDf=self.getElevationTypeSequence(displayType)
-        dataReversed = elevationDf.reindex(index=elevationDf.index[::-1])
+    # def drawElevation (self, displayType='ELEVATION', saveFig=False):
+    #     elevationDf=self.getElevationTypeSequence(displayType)
+    #     dataReversed = elevationDf.reindex(index=elevationDf.index[::-1])
         
-        sns.set(font_scale=0.8)        
-        colors=[d['color'] for d in Constants.UNIT_TYPES]
-        colors.insert(0,[242/256, 242/256, 242/256])
-        cmap = LinearSegmentedColormap.from_list('NextGen', colors, len(colors))
-        ax = sns.heatmap(dataReversed, cmap=cmap, linewidths=0, linecolor='white')
+    #     sns.set(font_scale=0.8)        
+    #     colors=[d['color'] for d in Constants.UNIT_TYPES]
+    #     colors.insert(0,[242/256, 242/256, 242/256])
+    #     cmap = LinearSegmentedColormap.from_list('NextGen', colors, len(colors))
+    #     ax = sns.heatmap(dataReversed, cmap=cmap, linewidths=0, linecolor='white')
         
-        # Manually specify colorbar labelling after it's been generated
-        colorbar = ax.collections[0].colorbar
-        ticks = []
-        for i in range(0, 6):
-            step = (colorbar.vmax - colorbar.vmin)/ 6
-            ticks.append((step * i) + colorbar.vmin + step/ 2)
+    #     # Manually specify colorbar labelling after it's been generated
+    #     colorbar = ax.collections[0].colorbar
+    #     ticks = []
+    #     for i in range(0, 6):
+    #         step = (colorbar.vmax - colorbar.vmin)/ 6
+    #         ticks.append((step * i) + colorbar.vmin + step/ 2)
         
-        colorbar.set_ticks(ticks)
-        ticklabels=["Type "+str(d['unitTypeIndex']) for d in Constants.UNIT_TYPES]
-        ticklabels.insert(0,"None")
-        colorbar.set_ticklabels(ticklabels)
-        colorbar.ax.tick_params(size=0)
-        # X - Y axis labels
-        ax.set_ylabel('FLOOR')
-        ax.set_xlabel('WING POSITION')
-        # Only y-axis labels need their rotation set, x-axis labels already have a rotation of 0
-        _, labels = plt.yticks()
-        plt.setp(labels, rotation=0)
+    #     colorbar.set_ticks(ticks)
+    #     ticklabels=["Type "+str(d['unitTypeIndex']) for d in Constants.UNIT_TYPES]
+    #     ticklabels.insert(0,"None")
+    #     colorbar.set_ticklabels(ticklabels)
+    #     colorbar.ax.tick_params(size=0)
+    #     # X - Y axis labels
+    #     ax.set_ylabel('FLOOR')
+    #     ax.set_xlabel('WING POSITION')
+    #     # Only y-axis labels need their rotation set, x-axis labels already have a rotation of 0
+    #     _, labels = plt.yticks()
+    #     plt.setp(labels, rotation=0)
 
-        for floorIndex in sorted(self.parcelizedBuilding.keys()):
-            rFloor=len(self.parcelizedBuilding)+1-floorIndex
-            if displayType=='DOORS':
-                parcelisedLG = self.parcelizedBuilding[rFloor].unitSequence #count downwards due to inversin of origin on heatmap - matpotlib issue
-            elif displayType=='ELEVATION':
-                parcelisedLG = self.parcelizedBuilding[rFloor].elevationSequence
+    #     for floorIndex in sorted(self.parcelizedBuilding.keys()):
+    #         rFloor=len(self.parcelizedBuilding)+1-floorIndex
+    #         if displayType=='DOORS':
+    #             parcelisedLG = self.parcelizedBuilding[rFloor].unitSequence #count downwards due to inversin of origin on heatmap - matpotlib issue
+    #         elif displayType=='ELEVATION':
+    #             parcelisedLG = self.parcelizedBuilding[rFloor].elevationSequence
 
-            index=0
-            while index < len(parcelisedLG):
-                currentDoor = parcelisedLG[index]
-                if currentDoor < 0:
-                    numOccupiedDoors = 1
-                    rect = patches.Rectangle((index, floorIndex-1), width=1, height=1, linewidth=4,
-                                             edgecolor='white', facecolor='none')
-                    ax.add_patch(rect)
+    #         index=0
+    #         while index < len(parcelisedLG):
+    #             currentDoor = parcelisedLG[index]
+    #             if currentDoor < 0:
+    #                 numOccupiedDoors = 1
+    #                 rect = patches.Rectangle((index, floorIndex-1), width=1, height=1, linewidth=4,
+    #                                          edgecolor='white', facecolor='none')
+    #                 ax.add_patch(rect)
 
-                else:
-                    numOccupiedDoors = parcelisedLG.count(currentDoor)
-                    rect = patches.Rectangle((index, floorIndex-1), width=numOccupiedDoors, height=1, linewidth=4,
-                                             edgecolor='white', facecolor='none')
-                    ax.add_patch(rect)
-                index+=numOccupiedDoors
-        plt.show()
+    #             else:
+    #                 numOccupiedDoors = parcelisedLG.count(currentDoor)
+    #                 rect = patches.Rectangle((index, floorIndex-1), width=numOccupiedDoors, height=1, linewidth=4,
+    #                                          edgecolor='white', facecolor='none')
+    #                 ax.add_patch(rect)
+    #             index+=numOccupiedDoors
+    #     plt.show()
 
 #==================================DRAW & MISC. FUNCTIONS==================================
 def reindexToIntKeyDict(d):

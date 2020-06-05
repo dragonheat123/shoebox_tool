@@ -16,12 +16,12 @@ class Parcelized_layout_graph:
         #no units so all doors initialized as 0 at first
         self.doorSequence = [0]*len(layout.doorEdgeIds) #ORDERED- with reference to doorway index in layout graph
         self.unitSequence = [-1]*len(layout.doorEdgeIds) #aka. door sequence
-        self.unitElevationSequence = [-1,-1,-2,-1,-1,-1,-2,-1,-1,-1,-2,-1,-1] #-nodes facing outside
-        self.elevationSequence = [-1]*len(layout.elevationNodes)
+        #self.unitElevationSequence = [-1,-1,-2,-1,-1,-1,-2,-1,-1,-1,-2,-1,-1] #-nodes facing outside
+        #self.elevationSequence = [-1]*len(layout.elevationNodes)
         
         self.wallState={}   #edgeId:wallType:[wallOn/Off]
         
-    def addUnit(self,unit,doorEdgesRef,elevationNodesRef,entrancesOccupied,isCompromise=False):
+    def addUnit(self,unit,doorEdgesRef,entrancesOccupied,isCompromise=False):
         unitIndex=unit.getUnitTypeIndex()
 
         for i in range(len(self.doorSequence)):
@@ -30,10 +30,10 @@ class Parcelized_layout_graph:
                 if unit.doorwayId==doorEdgesRef[i]:
                     self.doorSequence[i]=len(entrancesOccupied)
                     
-        for i in range(len(self.elevationSequence)):
-            if elevationNodesRef[i] in unit.connectedNodeIds:
-                self.elevationSequence[i]=unitIndex
-                self.unitElevationSequence[i]=len(self.units)
+        # for i in range(len(self.elevationSequence)):
+        #     if elevationNodesRef[i] in unit.connectedNodeIds:
+        #         self.elevationSequence[i]=unitIndex
+        #         self.unitElevationSequence[i]=len(self.units)
         self.units.append(unit)
         self.occupiedEdges=self.occupiedEdges.union(unit.connectedEdgeIds)
 

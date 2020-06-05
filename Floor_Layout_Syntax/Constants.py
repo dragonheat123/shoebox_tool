@@ -3,8 +3,8 @@
 EMPTY_SPACE_THRESHOLD = 3 #ignore unit combinations if empty spaces exceed value specified
 #--Phase 2 Genetic algorithm constants
 GA_MUTATION_RATE = 0.1
-GA_POPCOUNT = 500
-GA_GENERATIONS = 30
+GA_POPCOUNT = 300
+GA_GENERATIONS = 10
 
 #--UNIT TYPE CONSTANTS
 UNIT_TYPES=[{

@@ -59,7 +59,7 @@ def main():
     
     layout = Layout.Layout_graph()
     layout.importJSON(nodes_jsonfilepath, edges_jsonfilepath,lcaDbPath)
-    layout.loadDrawVectors(pos_path, lengths_path,imageRootPath)
+    # layout.loadDrawVectors(pos_path, lengths_path,imageRootPath)
     building=Building.Building(layout,4,3,4)
     
     for year,demand in demandProjection.items():
