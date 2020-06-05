@@ -26,7 +26,7 @@ lengths_path = rootPath+"floorplan_vectors\\position_vector_lengths.txt"
 
 results_directory=rootPath+'saved_results\\'
 parcelation_db=results_directory+'parcelation_db'
-saveFilePath=results_directory+datetime.now().strftime("%Y-%m-%d_%H%M")+'\\'
+#saveFilePath=results_directory+datetime.now().strftime("%Y-%m-%d_%H%M")+'\\'
 #loadFilePath=results_directory+"2020-03-23_1208"+"\\"
 #--------------------------------------------------------------------------------
 #--mac ver
@@ -60,7 +60,7 @@ def main():
     layout = Layout.Layout_graph()
     layout.importJSON(nodes_jsonfilepath, edges_jsonfilepath,lcaDbPath)
     layout.loadDrawVectors(pos_path, lengths_path,imageRootPath)
-    building=Building.Building(layout)
+    building=Building.Building(layout,4,3,4)
     
     for year,demand in demandProjection.items():
         print("===processing year "+year+" demands===")
@@ -68,7 +68,7 @@ def main():
         d={'1-30':np.array(demand)}
         b.parcelate(d)
     
-        saveFilePath=saveFilePath+year+'/'
+        saveFilePath=results_directory+year+'/'
         os.makedirs(saveFilePath, exist_ok=True) #creates a new folder at saveFilePath for results
         b.save(saveFilePath)
         print("---successfully saved results for year "+year+"---")
@@ -78,29 +78,29 @@ def main():
     #=================================================
     # building=Building.loadBuilding(loadFilePath)
     
-    ##=================DRAW RESULTS====================
-    building.drawDemographicModelChart()   #plot of demographic demand for unit types
-    building.drawComparisonChart()  #compares unit distribution to demographic demand
-    building.drawElevation()
-    building.drawFloorGraph(3)
-    building.drawAllFloorGraphs()
+    # ##=================DRAW RESULTS====================
+    # building.drawDemographicModelChart()   #plot of demographic demand for unit types
+    # building.drawComparisonChart()  #compares unit distribution to demographic demand
+    # building.drawElevation()
+    # building.drawFloorGraph(3)
+    # building.drawAllFloorGraphs()
     
-    ##====================COMPARISON===================
-    b1=Building.loadBuilding(results_directory+"2020\\")
-    b2=Building.loadBuilding(results_directory+"2040\\")
-    b1.drawComparisonChart()
-    b2.drawComparisonChart()
-    pp = pprint.PrettyPrinter(indent=4)
+    # ##====================COMPARISON===================
+    # b1=Building.loadBuilding(results_directory+"2020\\")
+    # b2=Building.loadBuilding(results_directory+"2040\\")
+    # b1.drawComparisonChart()
+    # b2.drawComparisonChart()
+    # pp = pprint.PrettyPrinter(indent=4)
     
-    floor=12
-    print("--Floor "+str(floor)+" changes:")
-    pp.pprint(b1.compareFloorWallChanges(b2,floor))
-    b1.drawFloorGraph(floor)
-    b2.drawFloorGraph(floor)
+    # floor=12
+    # print("--Floor "+str(floor)+" changes:")
+    # pp.pprint(b1.compareFloorWallChanges(b2,floor))
+    # b1.drawFloorGraph(floor)
+    # b2.drawFloorGraph(floor)
     
-    ##--Cumulative floor changes of the entire building
-    print("--Cumulative changes:")
-    pp.pprint(b1.compareBuildingWallChanges(b2))
+    # ##--Cumulative floor changes of the entire building
+    # print("--Cumulative changes:")
+    # pp.pprint(b1.compareBuildingWallChanges(b2))
     
 if __name__== "__main__":
     main()

@@ -1,22 +1,24 @@
 import Floor_Layout_Syntax.Constants as Constants
-#import Floor_Layout_Syntax.Layout_graph_v2 as Layout
-#import Floor_Layout_Syntax.UserInput as UserInput
 import Floor_Layout_Syntax.GeneticAlgorithm as GA
 import numpy as np
 from datetime import datetime
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import seaborn.apionly as sns
-from matplotlib.colors import LinearSegmentedColormap
+# import matplotlib.pyplot as plt
+# import matplotlib.patches as patches
+# import seaborn.apionly as sns
+# from matplotlib.colors import LinearSegmentedColormap
 from pandas import DataFrame as df
 import jsonpickle
 
-class Building:
-    def __init__(self,layoutGraph):
+class Building:    
+    def __init__(self,layoutGraph,floorCount, floorHeight, floorThickness):
         ### argument format ###
         #parcelizedBuilding is a dictionary:
             #keys -  corresponding floor level as string(int)
             #values - Parcelized_layout_graph objects
+        self.floorCount=floorCount
+        self.floorHeight=floorHeight
+        self.floorThickness=floorThickness
+        
         self.parcelizedBuilding={}
         self.layoutPopulation={}
         self.layoutGraph=layoutGraph
@@ -33,7 +35,7 @@ class Building:
     
     def parcelate(self, demographicModel):
         start = datetime.now()
-            
+        
         #===============================================PHASE 2==============================================
         #--Selection and layout generation component; GA selects unit combination and traveral allocates units
         #====================================================================================================
