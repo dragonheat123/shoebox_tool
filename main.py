@@ -1,4 +1,3 @@
-import Floor_Layout_Syntax.Constants as Constants
 import Floor_Layout_Syntax.Layout_graph as Layout
 import Floor_Layout_Syntax.Building as Building
 import numpy as np
@@ -13,38 +12,11 @@ import copy
 #-positional demand
 
 #================================PATH VARIABLES=================================
-#--replace rootPath with root directory path
-#--windows ver
-rootPath = 'D:\\repos\\shoebox_tool\\'
-edges_jsonfilepath =rootPath+'testcases\\2_edges.txt'
-nodes_jsonfilepath =rootPath+'testcases\\2_nodes.txt'
-lcaDbPath=rootPath+'testcases\\Quartz_db_2019_Jan.csv'
-imageRootPath=rootPath+'images\\floorplan_base3.png'
-
-pos_path = rootPath+"floorplan_vectors\\node position_vectors_rot_offsets.txt"
-lengths_path = rootPath+"floorplan_vectors\\position_vector_lengths.txt"
-
-results_directory=rootPath+'saved_results\\'
-parcelation_db=results_directory+'parcelation_db'
-#saveFilePath=results_directory+datetime.now().strftime("%Y-%m-%d_%H%M")+'\\'
-#loadFilePath=results_directory+"2020-03-23_1208"+"\\"
-#--------------------------------------------------------------------------------
-#--mac ver
-# rootPath = '/Users/zack_sutd/Dropbox (Personal)/SUTD/PostDoc/Space Syntax/next-gen-space-syntax/'
-# edges_jsonfilepath =rootPath+'testcases/2_edges.txt'
-# nodes_jsonfilepath =rootPath+'testcases/2_nodes.txt'
-# lcaDbPath=rootPath+'testcases/Quartz_db_2019_Jan.csv'
-# imageRootPath=rootPath+'images/floorplan_base3.png'
-
-# pos_path = rootPath+"floorplan_vectors/node position_vectors_rot_offsets.txt"
-# lengths_path = rootPath+"floorplan_vectors/position_vector_lengths.txt"
-
-# results_directory=rootPath+'saved_results/'
-# saveFilePath=results_directory+datetime.now().strftime("%Y-%m-%d_%H%M")+'/'
-# loadFilePath=results_directory+"2020-03-23_1208"+"/"
-#--------------------------------------------------------------------------------
-
-
+rootPath = os.path.dirname(__file__)
+edges_jsonfilepath = os.path.join(rootPath, 'testcases','2_edges.txt')
+nodes_jsonfilepath = os.path.join(rootPath, 'testcases','2_nodes.txt')
+lcaDbPath = os.path.join(rootPath, 'testcases','Quartz_db_2019_Jan.csv')
+results_directory = os.path.join(rootPath,'saved_results')
 
 #==================================MAIN PROGRAM==================================
 def main():
@@ -62,13 +34,14 @@ def main():
     # layout.loadDrawVectors(pos_path, lengths_path,imageRootPath)
     building=Building.Building(layout,4,3,4)
     
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H%M")
     for year,demand in demandProjection.items():
         print("===processing year "+year+" demands===")
         b=copy.deepcopy(building)
         d={'1-30':np.array(demand)}
         b.parcelate(d)
     
-        saveFilePath=results_directory+year+'/'
+        saveFilePath = os.path.join(results_directory,timestamp,year)
         os.makedirs(saveFilePath, exist_ok=True) #creates a new folder at saveFilePath for results
         b.save(saveFilePath)
         print("---successfully saved results for year "+year+"---")

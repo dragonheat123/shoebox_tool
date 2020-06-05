@@ -29,8 +29,16 @@ class Building:
         #====================================================================================================
         self.layoutGraph.generateParcelationDb(Constants.EMPTY_SPACE_THRESHOLD)
         
+    def toJson(self):
+        result = dict()
+        result['floorCount'] = self.floorCount
+        result['floorHeight'] = self.floorHeight
+        result['floorThickness'] = self.floorThickness
+        result['layout'] = list()
+        return
+        
     def setDefaultState(self):
-        for f in range(1,31):
+        for f in range(1,self.floorCount+1):
             self.parcelizedBuilding[f] = self.layoutGraph.getDefaultLayout()
     
     def parcelate(self, demographicModel):
@@ -44,7 +52,7 @@ class Building:
         #--foreach floor range, select unitCombination in floors then generate layout in each
         for fR in self.demographicModel.keys():
             floorBound = list(map(int, fR.split('-',1)))  #[0]->lower floor bound; [1]->upper floor bound
-            floorCount = floorBound[1]-floorBound[0]+1
+            floorCount = floorBound[1]-floorBound[0]+1  # TODO: static floorcount definition
             #--GA component to get try get best floor combinations
             population = GA.Population(self.demographicModel[fR], floorCount, Constants.GA_MUTATION_RATE, self.layoutGraph.unitCombinations, Constants.GA_POPCOUNT)
             for i in range(Constants.GA_GENERATIONS):
@@ -66,25 +74,32 @@ class Building:
         print(start)
         print('End Time: ')
         print(datetime.now())
-
-    def getTotalGwp(self,floor=None,wallType='infill'):
+    
+    '''
+    #========================================getGwp method=========================================
+    returns: 
+        gwp of building based on params
+    params:
+        floor- get gwp of specific floor/ if None or unspecifed calculates entire building gwp
+        wallType- adds gwp of specified type; default is infill and structural
+    ===============================================================================================
+    '''
+    def getGwp(self,floor=None,wallType=['infill','structural']):
         gwp=0
         #TOOO: a more elegant solution
         if floor==None:
-            gwp+=self.getStructuralGwp(True)
-            for f in self.parcelizedBuilding.values():
-                f.turnOnUnitSurroundingWalls(wallType,self.layoutGraph)
-                gwp+=f.getTotalGwpOfWallType(wallType,self.layoutGraph)
+            if 'structural' in wallType:
+                gwp+=self.layoutGraph.getStructuralGwp()*len(self.parcelizedBuilding)
+            if 'infill' in wallType:
+                for f in self.parcelizedBuilding.values():
+                    f.turnOnUnitSurroundingWalls('infill',self.layoutGraph)
+                    gwp+=f.getTotalGwpOfWallType('infill',self.layoutGraph)
         else:
             self.parcelizedBuilding[floor].turnOnUnitSurroundingWalls(wallType,self.layoutGraph)
-            gwp+=self.getStructuralGwp(False)
-            gwp+=self.parcelizedBuilding[floor].getTotalGwpOfWallType(wallType)
-        return gwp
-    
-    def getStructuralGwp(self, forAllFloors=True):
-        gwp = self.layoutGraph.getStructuralGwp()
-        if forAllFloors==True:
-            gwp*=len(self.parcelizedBuilding)
+            if 'structural' in wallType:
+                gwp+=self.layoutGraph.getStructuralGwp()
+            if 'infill' in wallType:
+                gwp+=self.parcelizedBuilding[floor].getTotalGwpOfWallType('infill')
         return gwp
     
     def getInfillGWP(self,otherBuilding):
@@ -128,15 +143,12 @@ class Building:
             self.layoutGraph.fillEmptyNodes(parcelized)
 #            print('new seq:',self.parcelizedBuilding[str(len(self.parcelizedBuilding.keys())-floorIndex)].unitSequence)
     
-    def getElevationTypeSequence(self,displayType):
+    def getElevationTypeSequence(self):
         types = []
         for floorIndex in sorted(self.parcelizedBuilding.keys()):
 #            print ('Floor ', floorIndex)
             parcelisedLG = self.parcelizedBuilding[floorIndex]
-            if displayType=="DOORS":
-                floorTypeSeq = parcelisedLG.doorSequence
-            else:
-                floorTypeSeq = parcelisedLG.elevationSequence
+            floorTypeSeq = parcelisedLG.doorSequence
             types.append(floorTypeSeq)
 #            print (floorTypeSeq)
             dataF = df(data=types)

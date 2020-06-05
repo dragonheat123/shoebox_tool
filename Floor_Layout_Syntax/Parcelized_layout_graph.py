@@ -18,9 +18,11 @@ class Parcelized_layout_graph:
         self.unitSequence = [-1]*len(layout.doorEdgeIds) #aka. door sequence
         #self.unitElevationSequence = [-1,-1,-2,-1,-1,-1,-2,-1,-1,-1,-2,-1,-1] #-nodes facing outside
         #self.elevationSequence = [-1]*len(layout.elevationNodes)
-        
         self.wallState={}   #edgeId:wallType:[wallOn/Off]
         
+    def exportUnitData(self):
+        return self.units
+    
     def addUnit(self,unit,doorEdgesRef,entrancesOccupied,isCompromise=False):
         unitIndex=unit.getUnitTypeIndex()
 
