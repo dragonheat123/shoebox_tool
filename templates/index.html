@@ -1,39 +1,149 @@
 <html>
 <head>
-	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="https://d3js.org/d3.v5.min.js" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </head>
 
 <body>
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="/">Shoebox Parcellation Tool</a>
+</nav>
+
 	<div class="floor_plan" hidden>{{ name }}</div>
-	<svg id="svg1" style="margin: 0 auto; display: block;"></svg>
+	<div class="container-fluid">
+	<div class="row">
+		<div class = ".col-md-1 offset-1"></div>
+		<div class = ".col-md-7">
+			<button id="reset" type="button" onclick="reset()" style="display: block;">Reset</button>
+			<svg id="svg1" style="display: block;"></svg>
+			<div class="control"></div>
+		</div>
+		<div class = ".col-md-3">
+			<button id="select_shoeboxes" type="button" onclick="reset()" style="display: block;">Select Shoeboxes</button>
+		</div>
+		<div class = ".col-md-1 offset-1"></div>
+	</div>
+	</div>
 </body>
 
 <script type="text/javascript">
-	var data = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML)
-
+	var data = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).fp
+	var centroid = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).centroid
+	var intc = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).int
+	var control = document.getElementsByClassName("control")[0]
+	var node = Array(centroid.length)
+	var color = d3.scaleOrdinal(d3.schemeCategory10);
+	var t
+	var count = 1
 	const svg = d3.select('#svg1')
-    .attr('width', 1080)
-    .attr('height', 720)
+    .attr('width', window.innerWidth/2)
+    .attr('height', window.innerHeight/1.5)
     .style('background-color', 'black')
     .call(d3.zoom().on("zoom", function () {
-              svg.attr("transform", d3.event.transform)
+    			t = d3.event.transform;
+    			//console.log('act',"translate("+t.x+","+t.y+") scale("+t.k+")");
+    			t_x = t.x+window.innerWidth/4; t_y=t.y+window.innerHeight/3; t_k =t.k+5;
+    			//console.log('ed',"translate("+t_x+","+t_y+") scale("+t_k+")");
+              svg.attr("transform", "translate("+t_x+","+t_y+") scale("+t_k+")");
       }))
       .append("g");
 
-    function addLine(x1,y1,x2,y2,svg){
-	svg.append('line')
+
+   	d3.select('#svg1').on("load", function () {svg.attr("transform", "translate("+window.innerWidth/4+","+window.innerHeight/3+") scale("+5+")");}).append("g")
+
+   	function reset() {
+   		svg.attr("transform", "translate("+window.innerWidth/4+","+window.innerHeight/3+") scale("+5+")")
+   	}
+    
+    function addLine(x1,y1,x2,y2,svg,i,j){
+	svg.append("line")
 	.style("stroke", "lightgreen")
-	.style("stroke-width", 1)
+	.style("stroke-width", 0.5)
 	.attr("x1", x1)
 	.attr("y1", y1)
 	.attr("x2", x2)
-	.attr("y2", y2);
+	.attr("y2", y2)
+	.attr("id", 'line'+String(i)+"-"+String(j))
+	.on("click", function(){console.log("clicked");d3.select("#line"+String(i)+"-"+String(j)).style("stroke-width",1)});
 	};
 
-	for (i=0; i<data.length; i++){
-		for (j=0; j<data[i].length-1; j++){
-			addLine(data[i][j][0],-data[i][j][1],data[i][j+1][0],-data[i][j+1][1],svg)
-		}
+	function addCircle(x1,y1,svg,i){
+	svg.append("circle")
+	.style("fill","blue")
+	.attr("cx",x1)
+	.attr("cy",y1)
+	.attr("r",0.5)
+	.attr("id", 'cen'+String(i))
+	.text(node[i])
+	.on("click", function(){
+		if(document.getElementById("Node_hold"+String(i))==null){addNodeControl(i)};
+		d3.select("#cen"+String(i)).attr("r",1);});
+
+	svg.append("text")
+	.style("fill","white")
+	.attr("x",x1)
+	.attr("y",y1)
+	.attr("font-size","0.05em")
+	.attr("id",'centext'+String(i))
+	.text("-")	
+	
+	}
+
+	function addInt(x1,y1,x2,y2,svg,i,c){
+	svg.append("line")
+	.style("stroke", c(i))
+	.style("stroke-width", 0.2)
+	.attr("x1", x1)
+	.attr("y1", y1)
+	.attr("x2", x2)
+	.attr("y2", y2)
+	.attr("id", 'int'+String(i))
+	.on("click", function(){console.log("clicked");d3.select("#int"+String(i)).style("stroke-width",1)});
 	};
+
+	function addNodeControl(id){
+		var node_hold = document.createElement("div")
+		var header = document.createElement("h3")
+		header.innerHTML = "Node-"+String(id)
+		node_hold.append(header)
+		node_hold.id = "Node_hold"+String(id)
+		f = document.createElement('span')
+		f.appendChild(document.createTextNode("Room Type: "))
+		i1 = document.createElement("input")
+		i1.type = "text"; i1.id = "Node-"+String(id);
+		but = document.createElement("Button")
+		but.appendChild(document.createTextNode("ok"))
+		but.addEventListener("click", function(){
+			d3.select("#cen"+String(id)).attr("r",0.5);
+			node[id] = document.getElementById("Node-"+String(id)).value
+			d3.select("#centext"+String(id)).text(node[id]);
+			//alert('ok')
+			document.getElementById("Node_hold"+String(id)).remove()
+		})
+		f.append(i1)
+		f.append(but)
+		node_hold.append(f)
+		control.append(node_hold)
+	}
+
+	function sub(e){
+		console.log(e);
+	}
+
+	for (i=0; i<data.length; i++){
+		addCircle(centroid[i][0],-centroid[i][1],svg,i)
+		for (j=0; j<data[i].length-1; j++){
+			addLine(data[i][j][0],-data[i][j][1],data[i][j+1][0],-data[i][j+1][1],svg,i,j)
+		};};
+
+	for (k=0; k<intc.length; k++){
+		addInt(intc[k][0][0],-intc[k][0][1],intc[k][1][0],-intc[k][1][1],svg,k,color)
+	}
+
+
+
 </script>
 </html>
