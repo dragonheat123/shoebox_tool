@@ -43,8 +43,9 @@ def main():
     
         saveFilePath = os.path.join(results_directory,timestamp,year)
         os.makedirs(saveFilePath, exist_ok=True) #creates a new folder at saveFilePath for results
-        b.save(saveFilePath)
-        print("---successfully saved results for year "+year+"---")
+        b.toJson(saveFilePath)
+        #b.save(saveFilePath)
+        #print("---successfully saved results for year "+year+"---")
     
     #=================================================
     #---load parcelated building---

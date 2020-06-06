@@ -21,7 +21,10 @@ class Parcelized_layout_graph:
         self.wallState={}   #edgeId:wallType:[wallOn/Off]
         
     def exportUnitData(self):
-        return self.units
+        units = list()
+        for u in self.units:
+            units.append(u.exportData())
+        return units
     
     def addUnit(self,unit,doorEdgesRef,entrancesOccupied,isCompromise=False):
         unitIndex=unit.getUnitTypeIndex()

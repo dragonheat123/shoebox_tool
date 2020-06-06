@@ -2,12 +2,14 @@ import Floor_Layout_Syntax.Constants as Constants
 import Floor_Layout_Syntax.GeneticAlgorithm as GA
 import numpy as np
 from datetime import datetime
+import os
 import matplotlib.pyplot as plt
 # import matplotlib.patches as patches
 # import seaborn.apionly as sns
 # from matplotlib.colors import LinearSegmentedColormap
 from pandas import DataFrame as df
 import jsonpickle
+import json
 
 class Building:    
     def __init__(self,layoutGraph,floorCount, floorHeight, floorThickness):
@@ -29,12 +31,27 @@ class Building:
         #====================================================================================================
         self.layoutGraph.generateParcelationDb(Constants.EMPTY_SPACE_THRESHOLD)
         
-    def toJson(self):
+    def toJson(self,savefilePath):
         result = dict()
         result['floorCount'] = self.floorCount
         result['floorHeight'] = self.floorHeight
         result['floorThickness'] = self.floorThickness
-        result['layout'] = list()
+        result['layouts'] = list()
+        idx = 0
+        for floorIndex in sorted(self.parcelizedBuilding.keys()):
+            print("--floor "+str(floorIndex)+" parcelation--")
+            layouts = dict()
+            layouts['units'] = self.parcelizedBuilding[floorIndex].exportUnitData()
+            layouts['gwp'] = dict()
+            layouts['gwp']['infill'] = self.getGwp(floorIndex,['infill'])
+            layouts['gwp']['structural'] = self.getGwp(floorIndex,['structural'])
+            result['layouts'].append(layouts)
+            print(json.dumps(result['layouts'][idx]))
+            idx += 1
+        f= open(os.path.join(savefilePath,'building.json'),"w")
+        f.write(json.dumps(result))
+        f.close()
+        
         return
         
     def setDefaultState(self):
@@ -95,11 +112,11 @@ class Building:
                     f.turnOnUnitSurroundingWalls('infill',self.layoutGraph)
                     gwp+=f.getTotalGwpOfWallType('infill',self.layoutGraph)
         else:
-            self.parcelizedBuilding[floor].turnOnUnitSurroundingWalls(wallType,self.layoutGraph)
             if 'structural' in wallType:
                 gwp+=self.layoutGraph.getStructuralGwp()
             if 'infill' in wallType:
-                gwp+=self.parcelizedBuilding[floor].getTotalGwpOfWallType('infill')
+                self.parcelizedBuilding[floor].turnOnUnitSurroundingWalls('infill',self.layoutGraph)
+                gwp+=self.parcelizedBuilding[floor].getTotalGwpOfWallType('infill',self.layoutGraph)
         return gwp
     
     def getInfillGWP(self,otherBuilding):
@@ -163,16 +180,16 @@ class Building:
         for fR,population in self.layoutPopulation.items():
             population.printBestResults(self.layoutGraph.unitCombinations,self.demographicModel[fR],drawComparisonChart)
         
-    def drawFloorGraph(self,floorIndex):
-        print("--floor "+str(floorIndex)+" parcelation--")
-        parcelized=self.parcelizedBuilding[floorIndex]
-        self.layoutGraph.drawTraversedPaths(parcelized)
+    # def drawFloorGraph(self,floorIndex):
+    #     print("--floor "+str(floorIndex)+" parcelation--")
+    #     parcelized=self.parcelizedBuilding[floorIndex]
+    #     self.layoutGraph.drawTraversedPaths(parcelized)
     
-    def drawAllFloorGraphs(self):
-        for floorIndex in sorted(self.parcelizedBuilding.keys()):
-            print("--floor "+str(floorIndex)+" parcelation--")
-            parcelized=self.parcelizedBuilding[floorIndex]
-            self.layoutGraph.drawTraversedPaths(parcelized)
+    # def drawAllFloorGraphs(self):
+    #     for floorIndex in sorted(self.parcelizedBuilding.keys()):
+    #         print("--floor "+str(floorIndex)+" parcelation--")
+    #         parcelized=self.parcelizedBuilding[floorIndex]
+    #         self.layoutGraph.drawTraversedPaths(parcelized)
             
     # def drawElevation (self, displayType='ELEVATION', saveFig=False):
     #     elevationDf=self.getElevationTypeSequence(displayType)
