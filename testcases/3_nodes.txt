@@ -1,0 +1,23 @@
+[
+	{
+		"id":"0",
+		"roomType":"outside",
+		"floorArea":"",
+		"floorMatId":"CP032",
+		"innerWalls":[]
+	},
+	{
+		"id":"1",
+		"roomType":"service",
+		"floorArea":"",
+		"floorMatId":"CP032",
+		"innerWalls":[]
+	},
+	{
+		"id":"2",
+		"roomType":"normal",
+		"floorArea":"",
+		"floorMatId":"CP032",
+		"innerWalls":[]
+	}
+]
