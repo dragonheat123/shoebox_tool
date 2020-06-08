@@ -72,7 +72,6 @@ class Layout_graph:
         if nodeId2 not in self.nodes.keys(): 
             self.addNode (newNodeID=nodeId2)
             print("Node "+str(nodeId2)+" not found! Created new node")
-            
         
         isDoorway = False
         if nodeId1 in self.serviceNodeIds and int(nodeId2) != 0:
@@ -98,17 +97,17 @@ class Layout_graph:
         e.adjWalls=adjWalls
         e.id=edgeId
         
-        #TODO: make this definition more robust
         #-traversable means that the nodes (rooms) can be connected to form a unit
         isTraversable=False
         if isAccessible and not isDoorway:
             isTraversable=True
-        else:
-            traversableWallTypes={"infill"} #TODO: convert to global constant for removable wall types
-            for t in traversableWallTypes:
-                if t in adjWalls:
-                    isTraversable=True
-                    break
+        # following definition should be covered by accessibility
+        # else:
+        #     traversableWallTypes={"infill"} #TODO: convert to global constant for removable wall types
+        #     for t in traversableWallTypes:
+        #         if t in adjWalls:
+        #             isTraversable=True
+        #             break
             
         self.edges[edgeId]=e
         if isTraversable:
@@ -148,35 +147,41 @@ class Layout_graph:
             return None
 
     def importJSON(self, nodes_JSONfilepath , edges_JSONfilepath, lcaDbPath):
+        print("-------------Importing nodes and edges-----------------")
         with open(nodes_JSONfilepath) as nodes_json_file:
             nodesData = json.load(nodes_json_file)
 
         for n in nodesData:
-            #TODO: fix material Id (also in inWall)
-            self.addNode(newNodeID=str(n['id']), roomtype=n['roomtype'], floorArea=n['floorArea'], floorMaterialID='CP032')
-            for inWall in n['innerWalls']:
-                self.nodes[n['id']].innerWalls.append(wall.Wall(vertices=inWall['vertices'], materialID='CP032', thickness=inWall['thickness'],
-                          wallType=inWall['wallType'], wallArea=inWall['wallArea'], wallLength=inWall['wallLength']))
+            #TODO: fix material Id (also in w)
+            self.addNode(newNodeID=str(n['id']), roomtype=n['roomType'], floorArea=n['floorArea'], floorMaterialID=n['floorMatId'])
+            for w in n['innerWalls']:
+                self.nodes[n['id']].innerWalls.append(wall.Wall(vertices=w['vertices'], matId=w['matId'], thickness=w['thickness'], composition=w['composition']))
+                # self.nodes[n['id']].innerWalls.append(wall.Wall(vertices=w['vertices'], materialID='CP032', thickness=w['thickness'],
+                #           wallType=w['wallType'], wallArea=w['wallArea'], wallLength=w['wallLength']))
+        print("Nodes added:",self.nodes.keys())
         with open(edges_JSONfilepath) as edges_json_file:
             edgesData = json.load(edges_json_file)
-
         tempDb= LCADB.LCADB(lcaDbPath)
         for e in edgesData:
-            adjacentWalls = {}
+            # adjacentWalls = {}
+            adjWalls = list()
             #TODO: fix material Id
-            for inWall in e['adjWalls']:                    
-                if inWall['wallType'] not in adjacentWalls:
-                    adjacentWalls[inWall['wallType']]=[wall.Wall(vertices=inWall['vertices'], materialID='CP032', thickness=inWall['thickness'],
-                           wallType=inWall['wallType'], wallArea=inWall['wallArea'], wallLength=inWall['wallLength'],lcaDb=tempDb)]
-                else:
-                    adjacentWalls[inWall['wallType']].append(wall.Wall(vertices=inWall['vertices'], materialID='CP032', thickness=inWall['thickness'],
-                           wallType=inWall['wallType'], wallArea=inWall['wallArea'], wallLength=inWall['wallLength'],lcaDb=tempDb))
+            for w in e['adjWalls']:
+                adjWalls.append(wall.Wall(vertices=w['vertices'], matId=w['matId'], thickness=w['thickness'], composition=w['composition']))
+                # if w['wallType'] not in adjacentWalls:
+                #     adjacentWalls[w['wallType']]=[wall.Wall(vertices=w['vertices'], matId=w['matId'], thickness=w['thickness'],
+                #            wallType=w['wallType'], wallArea=w['wallArea'], wallLength=w['wallLength'],lcaDb=tempDb)]
+                # else:
+                #     adjacentWalls[w['wallType']].append(wall.Wall(vertices=w['vertices'], matId=w['matId'], thickness=w['thickness'],
+                #            wallType=w['wallType'], wallArea=w['wallArea'], wallLength=w['wallLength'],lcaDb=tempDb))
             # if e['isDoorway']:
             #     self.doorEdgeIds.append(e['edgeId'])
-            self.addEdgeById(edgeId=e['edgeId'], isAccessible=e['isAccessible'], adjWalls=adjacentWalls)
+            self.addEdgeById(edgeId=e['edgeId'], isAccessible=e['isAccessible'], adjWalls=adjWalls)
         #TODO: following function may be dynamic so consider better lcaDb system and structure hierarchy
-        print(self.doorEdgeIds)
+        print("Edges added:",self.edges.keys())
+        print("Door edges:",self.doorEdgeIds)
         self.getStructuralGwp(tempDb)
+        print("------------Conversion to Graph syntax success---------------")
 
     def importResultJson(self,importFilePath):
         f= open(importFilePath,"r")
@@ -396,7 +401,7 @@ class Layout_graph:
     #this method generates a list of all possible layout results from a demand list irregardless of position
     def generatePossibleLayout(self,demandList):
         if len(demandList)<1:
-            print("error: no demand to generate layout from")
+            print("Error: no demand to generate layout from")
             return
         
         allPossibleFloorplans=set()   #container for results after algorithm
@@ -437,7 +442,7 @@ class Layout_graph:
                     else:
 #                        print("--Door not free. Trying next..")
                         demandIndex-=1
-            if demandIndex==len(d):
+            if demandIndex == len(d)-1:
 #                print("Result(s) found!")
                 allPossibleFloorplans.update(possibleFloorplans)
 #                for fp in possibleFloorplans:
@@ -460,7 +465,7 @@ class Layout_graph:
                         demandList.append(unitIndex)
             #print("Result not found. Attempting to fulfil layout: "+str(demandList))
             result=self.generatePossibleLayout(demandList)
-            if (len(result)>0):
+            if (result!=None and len(result)>0):
                 print("+Result(s) found for combinationIndex: "+str(combinationIndex)+", "+str(demandList))
                 self.combinationResult[combinationIndex] = result
                 isParcelizable = True
@@ -476,23 +481,24 @@ class Layout_graph:
         unitCombiResults = {}
         for i in range(0,len(Constants.UNIT_TYPES)):
             checkSolutionSpace(self.roomCount.copy(),Constants.UNIT_TYPES,emptySpaceThreshold,i,[],unitCombiResults)
-        
+        print("Unchecked solution space:",unitCombiResults)
         i=0
         for unitCombination, emptySpace in unitCombiResults.items():
             countVector = []
             for unitType in range(len(Constants.UNIT_TYPES)):
-                countVector.append(unitCombination.count(str(unitType)))
+                countVector.append(unitCombination.count(str(unitType)))    #TODO: This method must be changed if unit types reach double digits
             self.unitCombinations[i]={
                     'countVector':countVector,
                     'emptySpace':emptySpace
                     }
             i+=1
-            
         entriesToRemove=set()
         #check validity of combinations and generate parcelations from them
+        print("==========Checking combination validity==========")
         for combinationIndex in self.unitCombinations.keys():
             if not self.parcelizeForCombinationIndex(combinationIndex):
                 entriesToRemove.add(combinationIndex)
+        print("=================Checking completed==============")
         
         #remove invalid combinations
         for key in entriesToRemove:
@@ -628,9 +634,11 @@ def checkSolutionSpace(layoutRoomCount,unitTypesList,emptySpaceThreshold,it,bran
     if(layoutRoomCount['normal']<0 or layoutRoomCount['toilet']<0 or layoutRoomCount['storage']<0):
         emptySpace = layoutRoomCount['normal']+unitTypesList[it]['normal']+layoutRoomCount['toilet']+unitTypesList[it]['toilet']+layoutRoomCount['storage']+unitTypesList[it]['storage']
         if emptySpace <= emptySpaceThreshold:
+            #sort and stringify combination to represent a unique gene (Combinations are only considered here)
             branchRes.sort()
             result[str(branchRes)] = emptySpace
     else:
         branchRes.append(it)
+        # recurse into different branches to try different combinations
         for i in range(0,len(unitTypesList)):
             checkSolutionSpace(layoutRoomCount.copy(),unitTypesList,emptySpaceThreshold,i,branchRes.copy(),result)

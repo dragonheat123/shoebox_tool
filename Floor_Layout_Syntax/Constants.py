@@ -8,12 +8,20 @@ GA_GENERATIONS = 10
 
 #--UNIT TYPE CONSTANTS
 UNIT_TYPES=[{
+    # "unitTypeIndex":0,
+    # "color":(0.031, 0.612, 0.533),
+    # "roomCount":4,
+    # "normal":2,
+    # "toilet":1,
+    # "storage":1
+    # }
+    #--TEST VALUES (TO REMOVE WHEN GWP DEBUGGED)--
     "unitTypeIndex":0,
     "color":(0.031, 0.612, 0.533),
-    "roomCount":4,
-    "normal":2,
-    "toilet":1,
-    "storage":1
+    "roomCount":1,
+    "normal":1,
+    "toilet":0,
+    "storage":0
     },
     {
     "unitTypeIndex":1,

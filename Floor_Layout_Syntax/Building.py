@@ -39,19 +39,19 @@ class Building:
         result['layouts'] = list()
         idx = 0
         for floorIndex in sorted(self.parcelizedBuilding.keys()):
-            print("--floor "+str(floorIndex)+" parcelation--")
+            #print("--floor "+str(floorIndex)+" parcelation--")
             layouts = dict()
             layouts['units'] = self.parcelizedBuilding[floorIndex].exportUnitData()
             layouts['gwp'] = dict()
             layouts['gwp']['infill'] = self.getGwp(floorIndex,['infill'])
             layouts['gwp']['structural'] = self.getGwp(floorIndex,['structural'])
             result['layouts'].append(layouts)
-            print(json.dumps(result['layouts'][idx]))
+            #print(json.dumps(result['layouts'][idx]))
             idx += 1
         f= open(os.path.join(savefilePath,'building.json'),"w")
         f.write(json.dumps(result))
         f.close()
-        
+        print("results saved at: "+os.path.join(savefilePath,'building.json'))
         return
         
     def setDefaultState(self):

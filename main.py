@@ -13,8 +13,8 @@ import copy
 
 #================================PATH VARIABLES=================================
 rootPath = os.path.dirname(__file__)
-edges_jsonfilepath = os.path.join(rootPath, 'testcases','2_edges.txt')
-nodes_jsonfilepath = os.path.join(rootPath, 'testcases','2_nodes.txt')
+edges_jsonfilepath = os.path.join(rootPath, 'testcases','3_edges.txt')
+nodes_jsonfilepath = os.path.join(rootPath, 'testcases','3_nodes.txt')
 lcaDbPath = os.path.join(rootPath, 'testcases','Quartz_db_2019_Jan.csv')
 results_directory = os.path.join(rootPath,'saved_results')
 

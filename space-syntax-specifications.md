@@ -19,20 +19,23 @@ Data structure in json follows
 [
 	{
 		"id":"0",		//id 0 is reserved for outside node
-		"roomtype":"outside",
+		"roomType":"outside",
 		"floorArea":"",
+		"floorMatId":"CP032",
 		"innerWalls":[]	//placeholder for future reuquirements
 	},
 	{
 		"id":"1",
-		"roomtype":"service",
+		"roomType":"service",
 		"floorArea":"",
+		"floorMatId":"CP032",
 		"innerWalls":[]
 	},
 	{
 		"id":"2",
-		"roomtype":"normal",
+		"roomType":"normal",
 		"floorArea":"",
+		"floorMatId":"CP032",
 		"innerWalls":[]
 	}
 ]
@@ -44,17 +47,17 @@ Data structure in json follows
 		"edgeId":"0/2",
 		"isAccessible":false,   //isTraversable edge
 		"adjWalls":[    
-			{
-					"matID":"SP20",				// id from lcadb
+				{
+					"matId":["CP024","CP032"],				// id from lcadb [0]=>structural [1]=>infill
 					"vertices":[[0,0],[0,1]],   // [x1,y1],[x2,y2]
 					"thickness":"1",
-					"composition":[10,90]		// [0]=>structural [1]=>infill
+					"composition":[0.1,0.9]		// [0]=>structural [1]=>infill
 				},
 				{
-					"matID":"SP20",
+					"matId":["CP024","CP032"],
 					"vertices":[[0,1],[1,1]],
 					"thickness":"1",
-					"composition":[10,90]
+					"composition":[0.1,0.9]
 				}
 			]
 	},	
@@ -63,10 +66,10 @@ Data structure in json follows
 		"isAccessible":false,
 		"adjWalls":[
 				{
-					"matID":"SP20",
+					"matId":["CP024",""],
 					"vertices":[[2,4],[4,4]],
 					"thickness":"1",
-					"composition":[10,20]
+					"composition":[1,0]
 				}
 			]
 	},
@@ -75,10 +78,10 @@ Data structure in json follows
 		"isAccessible":true,
 		"adjWalls":[
 				{
-					"matID":"SP20",
+					"matId":["CP024","CP032"],
 					"vertices":[[5,5],[6,6]],
 					"thickness":"1",
-					"composition":[10,20]
+					"composition":[0.8,0.2]
 				}
 			]
 	}
