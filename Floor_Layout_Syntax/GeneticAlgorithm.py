@@ -1,7 +1,7 @@
 import random
 import numpy as np
 import Floor_Layout_Syntax.Constants as Constants
-
+import time
 #dnaList ops
 def getLeastSpaceAndFilterOutDups(dnaList):
     leastSpace = float('inf')
@@ -21,11 +21,11 @@ def getLeastSpaceAndFilterOutDups(dnaList):
 def KL(P,Q):
     """ Epsilon is used here to avoid conditional code for
     checking that neither P nor Q is equal to 0. """
-    epsilon = 0.00001
+    #epsilon = 0.00001
     # You may want to instead make copies to avoid changing the np arrays.
-    A = P+epsilon
-    B = Q+epsilon
-    divergence = np.sum(P*np.log(A/B))
+    A = P#+epsilon
+    B = Q#+epsilon
+    divergence = np.sum(Q*np.abs(A-B))
     return divergence
 
 #In our use case, 
@@ -62,20 +62,37 @@ class Population:
     def naturalSelection(self):
         self.matingPool = []
         p=[]
+        # for dna in self.population:
+        #     p.append(dna.fitness/self.fitnessSum)
+        # while len(self.matingPool)<len(self.population):
+        #     x = np.random.randint(low=0, high=len(self.population))
+        #     if np.random.binomial(1,p[x])==1:
+        #         self.matingPool.append(self.population[x])
+        #print("===============Generation ",self.generation)
         for dna in self.population:
-            p.append(dna.fitness/self.fitnessSum)
-        while len(self.matingPool)<len(self.population):
-            x = np.random.randint(low=0, high=len(self.population))
-            if np.random.binomial(1,p[x])==1:
-                self.matingPool.append(self.population[x])
-                
-    def generate(self):                
-        for i in range(len(self.population)):
+            p.append(dna.fitness)
+        #print(p)
+        while len(self.matingPool)<100:
+            fit_idx = p.index(max(p))
+            #print("max index:",fit_idx,p)
+            self.matingPool.append(self.population[fit_idx])
+            self.population.pop(fit_idx)
+            #print("Res. pop:",self.population)
+            p.pop(fit_idx)
+            #print("------------------------")
+            #time.sleep(0.5)
+        #time.sleep(0.5)
+            
+    def generate(self):
+        self.new_gen = []                
+        for i in range(Constants.GA_POPCOUNT-len(self.matingPool)):
             partnerA = self.matingPool[random.randrange(len(self.matingPool))]
             partnerB = self.matingPool[random.randrange(len(self.matingPool))]
             child = partnerA.crossover(partnerB)
             child.mutate(self.mutationRate)
-            self.population[i] = child
+            self.new_gen.append(child)
+        self.population = self.new_gen + self.matingPool
+        #print('gen',self.population)
         self.generation+=1
         
     def evaluate(self):
@@ -83,7 +100,7 @@ class Population:
         worldRecord = float('-inf')
         worldFittests = []
         for g in self.population:
-            if g.fitness > worldRecord:
+            if g.fitness > worldRecord: 
                 worldRecord = g.fitness
                 worldFittests = [g]
             elif g.fitness == worldRecord:
@@ -136,7 +153,7 @@ class DNA:
         self.v = self.v/(np.sum(self.v, axis=0))
         
         #KL divergence
-        self.fitness = 1/KL(self.v,targetDist)
+        self.fitness = -KL(self.v,targetDist)
         
         #find magnitude of difference between vector and target distribution
 #        v=np.subtract(v, targetDist)
@@ -146,7 +163,7 @@ class DNA:
         
     def crossover(self,partner):
         child = DNA(self.length,self.genePool)
-        midPoint = random.randrange(len(self.genes))
+        midPoint = int(len(self.genes)/2) #random.randrange(len(self.genes))
         for i in range(len(self.genes)):
             if i > midPoint:
                 child.genes[i] = self.genes[i]
