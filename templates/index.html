@@ -98,17 +98,17 @@
 	
 	}
 
-	//function addInt(x1,y1,x2,y2,svg,i,c){
-	//svg.append("line")
-	//.style("stroke", c(i))
-	//.style("stroke-width", 0.2)
-	//.attr("x1", x1)
-	//.attr("y1", y1)
-	//.attr("x2", x2)
-	//.attr("y2", y2)
-	//.attr("id", 'int'+String(i))
-	//.on("click", function(){console.log("clicked");d3.select("#int"+String(i)).style("stroke-width",1)});
-	//};
+	function addInt(x1,y1,x2,y2,svg,i,c){
+	svg.append("line")
+	.style("stroke", c(i))
+	.style("stroke-width", 0.2)
+	.attr("x1", x1)
+	.attr("y1", y1)
+	.attr("x2", x2)
+	.attr("y2", y2)
+	.attr("id", 'int'+String(i))
+	.on("click", function(){console.log("clicked");d3.select("#int"+String(i)).style("stroke-width",1)});
+	};
 
 	function addNodeControl(id){
 		var node_hold = document.createElement("div")
@@ -145,13 +145,13 @@
 			addLine(data[i][j][0],-data[i][j][1],data[i][j+1][0],-data[i][j+1][1],svg,i,j)
 		};};
 
-	//for (k=0; k<intc.length; k++){
-	//	addInt(intc[k][0][0],-intc[k][0][1],intc[k][1][0],-intc[k][1][1],svg,k,color)
-	//}
+	for (k=0; k<intc.length; k++){
+		addInt(intc[k][0][0],-intc[k][0][1],intc[k][1][0],-intc[k][1][1],svg,k,color)
+	}
 
 	function addLineControl(id){
 		selected_line.push(id)
-		
+
 	}
 
 

@@ -14,3 +14,10 @@ Currently 4 specified roomtypes exists:
 - Storage:	Storage room for a unit
 
 [Space Syntax Graph Specifications](space-syntax-specifications.md)
+
+## To Run
+Make sure you are on Python 3
+```
+pip install -r requirements.txt
+python app.py
+```
