@@ -13,6 +13,7 @@
 </nav>
 
 	<div class="floor_plan" hidden>{{ name }}</div>
+	<div class="lcaData" hidden>{{ lcaData }}</div>
 	<br>
 	<div class="container-fluid">
 	<div class="row">
@@ -34,9 +35,11 @@
 
 <script type="text/javascript">
 	var data = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).fp
+	var lcaData = JSON.parse(document.getElementsByClassName("lcaData")[0].innerHTML)
 	var centroid = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).centroid
 	var intc = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).int
 	var control = document.getElementsByClassName("control")[0]
+	var selected_line = []
 	var node = Array(centroid.length)
 	var color = d3.scaleOrdinal(d3.schemeCategory10);
 	var t
@@ -61,7 +64,7 @@
    		svg.attr("transform", "translate("+window.innerWidth/4+","+window.innerHeight/3+") scale("+5+")")
    	}
     
-    function addLine(x1,y1,x2,y2,svg,i,j){
+    function addLine(x1,y1,x2,y2,svg,i,j,selected_line){
 	svg.append("line")
 	.style("stroke", "lightgreen")
 	.style("stroke-width", 0.5)
@@ -70,7 +73,7 @@
 	.attr("x2", x2)
 	.attr("y2", y2)
 	.attr("id", 'line'+String(i)+"-"+String(j))
-	.on("click", function(){console.log("clicked");d3.select("#line"+String(i)+"-"+String(j)).style("stroke-width",1)});
+	.on("click", function(){addLineControl(String(i)+"-"+String(j));d3.select("#line"+String(i)+"-"+String(j)).style("stroke-width",1).style("stroke","red")});
 	};
 
 	function addCircle(x1,y1,svg,i){
@@ -95,17 +98,17 @@
 	
 	}
 
-	function addInt(x1,y1,x2,y2,svg,i,c){
-	svg.append("line")
-	.style("stroke", c(i))
-	.style("stroke-width", 0.2)
-	.attr("x1", x1)
-	.attr("y1", y1)
-	.attr("x2", x2)
-	.attr("y2", y2)
-	.attr("id", 'int'+String(i))
-	.on("click", function(){console.log("clicked");d3.select("#int"+String(i)).style("stroke-width",1)});
-	};
+	//function addInt(x1,y1,x2,y2,svg,i,c){
+	//svg.append("line")
+	//.style("stroke", c(i))
+	//.style("stroke-width", 0.2)
+	//.attr("x1", x1)
+	//.attr("y1", y1)
+	//.attr("x2", x2)
+	//.attr("y2", y2)
+	//.attr("id", 'int'+String(i))
+	//.on("click", function(){console.log("clicked");d3.select("#int"+String(i)).style("stroke-width",1)});
+	//};
 
 	function addNodeControl(id){
 		var node_hold = document.createElement("div")
@@ -142,9 +145,15 @@
 			addLine(data[i][j][0],-data[i][j][1],data[i][j+1][0],-data[i][j+1][1],svg,i,j)
 		};};
 
-	for (k=0; k<intc.length; k++){
-		addInt(intc[k][0][0],-intc[k][0][1],intc[k][1][0],-intc[k][1][1],svg,k,color)
+	//for (k=0; k<intc.length; k++){
+	//	addInt(intc[k][0][0],-intc[k][0][1],intc[k][1][0],-intc[k][1][1],svg,k,color)
+	//}
+
+	function addLineControl(id){
+		selected_line.push(id)
+		
 	}
+
 
 
 
