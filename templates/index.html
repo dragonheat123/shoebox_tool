@@ -25,8 +25,33 @@
 			<svg id="svg1" style="display: block;"></svg>
 			<div class="control"></div>
 		</div>
-		<div class = ".col-md-3">
-			<button id="select_shoeboxes" type="button" onclick="reset()" style="display: block;">Select Shoeboxes</button>
+		<div class = ".col-md-1 offset-1"></div>
+		<div class = ".col-md-2">
+			<!--button id="select_shoeboxes" type="button" onclick="reset()" style="display: block;">Select Shoeboxes</button-->
+			<h3>Selected Node(s)</h3><br>
+			<div id="selected_node" style="word-wrap: break-word;">None yet...</div><br>
+			<span>Room Type:</span><br>
+			<span><input type="text" id="room_type"></span><br>
+			<span>Support,Infill,Opening Ratio:</span><br>
+			<span><input type="text" id="composition"></span><br>
+			<h5>North Wall</h5><br>
+			<span>Support Material: <select id="support_N_mat"></select></span><br>
+			<span>Infill Material: <select id="infill_N_mat"></select></span><br>
+			<span>Opening Material: <select id="openings_N_mat"></select></span><br>
+			<h5>South Wall</h5><br>
+			<span>Support Material: <select id="support_S_mat"></select></span><br>
+			<span>Infill Material: <select id="infill_S_mat"></select></span><br>
+			<span>Opening Material: <select id="openings_S_mat"></select></span><br>
+			<h5>East Wall</h5><br>
+			<span>Support Material: <select id="support_E_mat"></select></span><br>
+			<span>Infill Material: <select id="infill_E_mat"></select></span><br>
+			<span>Opening Material: <select id="openings_E_mat"></select></span><br>
+			<h5>West Wall</h5><br>
+			<span>Support Material: <select id="support_W_mat"></select></span><br>
+			<span>Infill Material: <select id="infill_W_mat"></select></span><br>
+			<span>Opening Material: <select id="openings_W_mat"></select></span><br>
+			<button id="ok" type="button" onclick="reset()" style="display: block;">Submit Changes</button>
+
 		</div>
 		<div class = ".col-md-1 offset-1"></div>
 	</div>
@@ -34,16 +59,37 @@
 </body>
 
 <script type="text/javascript">
-	var data = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).fp
+	var data = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML)
 	var lcaData = JSON.parse(document.getElementsByClassName("lcaData")[0].innerHTML)
-	var centroid = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).centroid
-	var intc = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).int
-	var control = document.getElementsByClassName("control")[0]
+	// var centroid = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).centroid
+	var intc = data.int
+	//var control = document.getElementsByClassName("control")[0]
 	var selected_line = []
-	var node = Array(centroid.length)
+	var node = Array(data.nodes.length)
 	var color = d3.scaleOrdinal(d3.schemeCategory10);
 	var t
-	var count = 1
+
+	function addDB(cont){
+		for (i = 0; i < Object.keys(lcaData.Name).length;i++){
+			var opt = Object.keys(lcaData.Name)[i];
+		    var el = document.createElement("option");
+		    el.textContent = lcaData.Name[Object.keys(lcaData.Name)[i]];
+		    el.value = opt;
+		    cont.appendChild(el);
+		}
+	}
+
+	support_N = document.getElementById("support_N_mat");infill_N = document.getElementById("infill_N_mat");openings_N = document.getElementById("openings_N_mat");
+	support_S = document.getElementById("support_S_mat");infill_S = document.getElementById("infill_S_mat");openings_S = document.getElementById("openings_S_mat");
+	support_E = document.getElementById("support_E_mat");infill_E = document.getElementById("infill_E_mat");openings_E = document.getElementById("openings_E_mat");
+	support_W = document.getElementById("support_W_mat");infill_W = document.getElementById("infill_W_mat");openings_W = document.getElementById("openings_W_mat");
+
+	addDB(support_N);addDB(infill_N);addDB(openings_N);
+	addDB(support_S);addDB(infill_S);addDB(openings_S)
+	addDB(support_E);addDB(infill_E);addDB(openings_E)
+	addDB(support_W);addDB(infill_W);addDB(openings_W)
+
+
 	const svg = d3.select('#svg1')
     .attr('width', window.innerWidth/2)
     .attr('height', window.innerHeight/1.5)
@@ -67,7 +113,7 @@
     function addLine(x1,y1,x2,y2,svg,i,j,selected_line){
 	svg.append("line")
 	.style("stroke", "lightgreen")
-	.style("stroke-width", 0.5)
+	.style("stroke-width", 0.1)
 	.attr("x1", x1)
 	.attr("y1", y1)
 	.attr("x2", x2)
@@ -101,7 +147,7 @@
 	function addInt(x1,y1,x2,y2,svg,i,c){
 	svg.append("line")
 	.style("stroke", c(i))
-	.style("stroke-width", 0.2)
+	.style("stroke-width", 0.1)
 	.attr("x1", x1)
 	.attr("y1", y1)
 	.attr("x2", x2)
@@ -132,22 +178,29 @@
 		f.append(i1)
 		f.append(but)
 		node_hold.append(f)
-		control.append(node_hold)
+		//control.append(node_hold)
+		d3.select("#line"+String(id)+"-"+String(0)).style("stroke-width",0.2).style("stroke","red").raise()
+		d3.select("#line"+String(id)+"-"+String(1)).style("stroke-width",0.2).style("stroke","red").raise()
+		d3.select("#line"+String(id)+"-"+String(2)).style("stroke-width",0.2).style("stroke","red").raise()
+		d3.select("#line"+String(id)+"-"+String(3)).style("stroke-width",0.2).style("stroke","red").raise()
+
+
 	}
 
 	function sub(e){
 		console.log(e);
 	}
 
-	for (i=0; i<data.length; i++){
-		addCircle(centroid[i][0],-centroid[i][1],svg,i)
-		for (j=0; j<data[i].length-1; j++){
-			addLine(data[i][j][0],-data[i][j][1],data[i][j+1][0],-data[i][j+1][1],svg,i,j)
+	for (i=0; i<data.nodes.length; i++){
+		centroid = data.nodes
+		addCircle(centroid[i].center[0],-centroid[i].center[1],svg,centroid[i].id)
+		for (j=0; j<centroid[i].walls.length-1; j++){
+			addLine(centroid[i].walls[j][0],-centroid[i].walls[j][1],centroid[i].walls[j+1][0],-centroid[i].walls[j+1][1],svg,centroid[i].id,j)
 		};};
 
-	for (k=0; k<intc.length; k++){
-		addInt(intc[k][0][0],-intc[k][0][1],intc[k][1][0],-intc[k][1][1],svg,k,color)
-	}
+	//for (k=0; k<intc.length; k++){
+	//	addInt(intc[k][0][0],-intc[k][0][1],intc[k][1][0],-intc[k][1][1],svg,k,color)
+	//}
 
 	function addLineControl(id){
 		selected_line.push(id)
