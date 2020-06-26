@@ -1,0 +1,20 @@
+﻿CPID,Version,Name,GWPvol,thickness (m),GWParea,MatType
+CP0001,a00,None,0,0,0,Support
+CP0002,a00,None,0,0,0,Infill
+CP0003,a00,None,0,0,0,Opening
+CP0004,a00,None,0,0,0,Slab
+CP002,a05,200mm Concrete Masonry Unit ,436,0.2,87.2,Support
+CP003,a06,150mm Wet Wall (Brick wall),410.61,0.15,61.5915,Support
+CP004,a07,125mm Dry wall,197.49,0.125,24.68625,Infill
+CP005,a08,200mm Timber Frame Wall,0.22,0.2,0.044,Infill
+CP006,a09,80mm Frame,663.79,0.08,53.1032,Infill
+CP007,a10,10mm Glazing,8.72,0.01,0.0872,Opening
+CP008,a11,110mm Panel,-81.66,0.11,-8.9826,Infill
+CP009,a12,25mm Door,378.07,0.025,9.45175,Opening
+CP010,a13,200mm Ready Mixed Concrete ,561.44,0.2,112.288,Support
+CP011,a14,240mm Glued Laminated Timber (Glulam) (2x240x400mm Columns),-763.5771,0.24,-183.258504,Support
+CP012,a15,240mm Cross Laminated Timber (CLT) ,-546.7675,0.24,-131.2242,Support
+CP013,a16,200mm Ready Mixed Concrete Slab,561.44,0.2,112.288,Slab
+CP014,a17,240mm Cross Laminated Timber (CLT) Slab,-546.7675,0.24,-131.2242,Slab
+CP015,a18,Concrete (80mm) and Glulam (240x280mm) Hybrid Slab,15.84472353,0.136,2.1548824,Slab
+CP016,a19,Concrete (80mm) and CLT (180mm) Hybrid Slab,-205.7805769,0.26,-53.50295,Slab

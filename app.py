@@ -5,7 +5,7 @@ import os
 import numpy as np
 import pandas as pd
 rootPath = os.path.dirname(__file__)
-lcaDbPath = os.path.join(rootPath, 'LCA','testcase_db1.csv')
+lcaDbPath = os.path.join(rootPath, 'LCA','testcase_db2.csv')
 lcaD = pd.read_csv(lcaDbPath)
 lcaD = lcaD.set_index("CPID")
 lcaD = lcaD.to_json()
