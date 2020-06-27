@@ -76,8 +76,8 @@
 			<span>Infill Material:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <select id="infill_W_mat" style="max-width:20%"></select></span><br>
 			<p>Opening Material: <select id="openings_W_mat" style="max-width:20%"></select></p><br>
 			<p></p>
-			<p><button id="assign_data" type="button" onclick="assign_data()" style="display: block;">Assign Changes</button></p>
-			<P><button id="send_data" type="button" onclick="send_data()" style="display: block;">Send to Grasshopper...</button></P>
+			<p><button id="assign_data" type="button" onclick="assign_data();alert('assigned!')" style="display: block;">Assign Changes</button></p>
+			<P><button id="send_data" type="button" onclick="send_data();alert('sent!')" style="display: block;">Send to Grasshopper...</button></P>
 
 
 		</div>
@@ -90,6 +90,13 @@
 
 	var data = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML)
 	var lcaData = JSON.parse(document.getElementsByClassName("lcaData")[0].innerHTML)
+	
+			function onlyUnique(value, index, self) { 
+			    return self.indexOf(value) === index;
+			}
+
+			var mat_array = Object.values(lcaData.Name).filter( onlyUnique );
+
 	// var centroid = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).centroid
 	var intc = data.int
 	//var control = document.getElementsByClassName("control")[0]
@@ -315,6 +322,8 @@
 			wall_N_vertices = [info.walls[2],info.walls[3]]
 			wall_W_vertices = [info.walls[3],info.walls[4]]
 
+
+			
 			function compToVertices (v,ratio,gwp_val,checked){
 				ver_sep = []
 				if (v[0][0] == v[1][0]){ //check for vertical wall
@@ -391,6 +400,8 @@
 			gwpW = eval(output[1].join("+"))
 
 			info["totalGWP"] = gwpS+gwpN+gwpE+gwpW
+			info["breakdownGWP"] = {}
+
 
 			//alert("labelled: Node-" + String(info["id"])+"!" )
 
@@ -416,19 +427,21 @@
 		}
 		selected_nodes = []
 		$("#selected_nodes_list")[0].innerHTML = "None yet."
-		alert("assigned!")
 
 	}
+
 
 		function send_data(){
 			$.ajax({
 			  url:"/get/",
 			  type:"POST",
-			  data:JSON.stringify(data.nodes),
+			  data:JSON.stringify([mat_array,data.nodes]),
 			  contentType:"application/json; charset=utf-8",
-			  dataType:"json"
+			  dataType:"json",
+			  complete: function() {
+			  	console.log("complete");
+			  }
 			})
-			alert("sent!")
 		}
 
 
