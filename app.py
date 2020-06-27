@@ -47,6 +47,14 @@ def output():
 	print("queried")
 	return json.dumps(out)
 
+@app.route('/parcel/',methods=['GET'])
+def parcel():
+	print("redirected")
+	return render_template('parcel.html',parcel=out,lcaData = lcaD)
+
+
+
+
 
 
 if __name__ == '__main__':
