@@ -4,10 +4,6 @@ import json
 import random
 
 import jsonpickle
-import matplotlib.colors as colors
-import matplotlib.image as mpimg
-import matplotlib.pyplot as plt
-import networkx as nx
 from more_itertools import distinct_permutations
 from sortedcontainers import SortedSet
 
@@ -56,7 +52,10 @@ class Layout_graph:
         self.nodes[newNodeID]=node.Node (id=newNodeID,roomtype=roomtype, floorArea=floorArea, floorMaterialID=floorMaterialID)
         if self.nodes[newNodeID].roomtype=="service":
             self.serviceNodeIds.add(newNodeID)
-        elif (self.nodes[newNodeID].roomtype!="outside"):
+        elif newNodeID=="0":
+            self.nodes[newNodeID].roomtype="outside"
+        elif (self.nodes[newNodeID].roomtype!="outside" and self.nodes[newNodeID].roomtype!="cor"):
+#            print(newNodeID,self.nodes[newNodeID].roomtype)
             self.roomCount[self.nodes[newNodeID].roomtype]+=1
 
 
@@ -316,7 +315,7 @@ class Layout_graph:
     
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 #       TRAVERSAL ALGORITHM
-    def traverseDelegateUnitNodes(self,floorplan,occupiedDoorIds,edgeToCurrentNodeId,currentNode,traversedNodeIds,traversedEdgeIds,traversablePaths,traversedPaths,criteria,possibleFloorplans,entrancesOccupied=0):
+    def traverseDelegateUnitNodes(self,floorplan,occupiedDoorIds,edgeToCurrentNodeId,currentNode,traversedNodeIds,traversedEdgeIds,traversablePaths,traversedPaths,criteria,possibleFloorplans,entrancesOccupied=0,wasCor=False):
         #update traversed path list and check if the this is a duplicate combination
         traversedNodeIds.add(currentNode.id)
         traversedEdgeIds.add(edgeToCurrentNodeId)
@@ -328,6 +327,7 @@ class Layout_graph:
         isUnit=True
         #update the criteria to fulfil of this path combination result
         if currentNode.roomtype in criteria:
+            wasCor=False
             if criteria[currentNode.roomtype]>0:
                 criteria['roomCount']-=1
                 criteria[currentNode.roomtype]-=1
@@ -335,8 +335,14 @@ class Layout_graph:
                     isUnit=False
             else:
                 return
-        else:
+        elif currentNode.roomtype == "outside" or currentNode.roomtype=="service":
             return
+        else:
+            if wasCor:
+                return
+            else:
+                wasCor=True
+            isUnit=False
         traversedPaths[hashSet]=criteria
         
         #draw graph
@@ -346,12 +352,10 @@ class Layout_graph:
 #        p=input()
         
         #index door edge if any
+        c_occupiedDoorIds=copy.deepcopy(occupiedDoorIds)
         if currentNode.entranceEdge != None: 
             entrancesOccupied+=1
-            c_occupiedDoorIds=copy.deepcopy(occupiedDoorIds)
             c_occupiedDoorIds.append(currentNode.entranceEdge)
-        else:
-            c_occupiedDoorIds=occupiedDoorIds
         
         #check if roomCount is exceeded, then check its validity as a unit if so
         if isUnit:
@@ -362,6 +366,9 @@ class Layout_graph:
 #                    print('is '+e.getConnectedNodeById(n)+' in '+traversedNodeIds)
                     if e.getConnectedNodeById(n).id in traversedNodeIds:
                         traversedEdgeIds.add(e.getEdgeId())
+#            print("traversed:",traversedNodeIds)
+#            print("edges:",traversedEdgeIds)
+#            print("doors:",c_occupiedDoorIds)
             unit=p_unit.Unit(doorwayId=c_occupiedDoorIds[0],constraint=criteria,connectedNodeIds=traversedNodeIds,connectedEdgeIds=traversedEdgeIds)
             newFloorplan=copy.deepcopy(floorplan)
             newFloorplan.addUnit(unit,self.doorEdgeIds,c_occupiedDoorIds)
@@ -369,8 +376,7 @@ class Layout_graph:
 
 #            print('=====VALID UNIT====')
 #            self.drawTraversedPaths(newFloorplan)
-            
-            self.testFloorplanScore(newFloorplan)
+#            self.testFloorplanScore(newFloorplan)
             possibleFloorplans.add(newFloorplan)
             return
         else:
@@ -394,63 +400,55 @@ class Layout_graph:
                         c_traversedNodeIds=traversedNodeIds.copy()
                         c_traversedEdgeIds=traversedEdgeIds.copy()
                         c_traversablePaths=traversablePaths.copy()
-                        self.traverseDelegateUnitNodes(floorplan,c_occupiedDoorIds,traversableEdgeId,nextNode,c_traversedNodeIds,c_traversedEdgeIds,c_traversablePaths,traversedPaths,c_criteria,possibleFloorplans,entrancesOccupied)
+                        self.traverseDelegateUnitNodes(floorplan,c_occupiedDoorIds,traversableEdgeId,nextNode,c_traversedNodeIds,c_traversedEdgeIds,c_traversablePaths,traversedPaths,c_criteria,possibleFloorplans,entrancesOccupied,wasCor)
 #       TRAVERSAL ALGORITHM END
 #--------------------------------------------------------------------------------------------------------------------------------------------------------    
     
     #this method generates a list of all possible layout results from a demand list irregardless of position
     def generatePossibleLayout(self,demandList):
         if len(demandList)<1:
-            print("Error: no demand to generate layout from")
+            print("error: no demand to generate layout from")
             return
         
         allPossibleFloorplans=set()   #container for results after algorithm
         demandListPermutations=distinct_permutations(demandList)
+#        print(demandListPermutations)
         #minClusterScore=(99,99)
         
+        #foreach permutation
         for d in demandListPermutations:
             floorplan=p_layout.Parcelized_layout_graph(self) #fresh empty new floorplan
             possibleFloorplans=set()
             demandIndex=-1        
-            #foreach doorway location
+            #foreach doorway location in the layout
             for door in self.doorEdgeIds:
-                demandIndex+=1
+                demandIndex+=1  #check next unit
                 if demandIndex>=len(d):
                     break
                 
                 startNode=self.edges[door].nodeV
                 #if starting node belongs to a unit already-- skip
-                traversedNodeIds=set()
-                traversedEdgeIds=set()
-                occupiedDoorIds=[]
                 currentNode=startNode
-                traversablePaths={}
-                criteria=Constants.UNIT_TYPES[d[demandIndex]].copy()
-                traversedPaths={} #consists of a frozen key set which shows node combinations and its score as value
                 
                 if demandIndex==0:
-#                    print('-trying demand: '+str(d))
-                    self.traverseDelegateUnitNodes(floorplan,occupiedDoorIds,door,currentNode,traversedNodeIds,traversedEdgeIds,traversablePaths,traversedPaths,criteria,possibleFloorplans)
+                    criteria=copy.deepcopy(Constants.UNIT_TYPES[d[demandIndex]])
+                    self.traverseDelegateUnitNodes(floorplan,list(),door,currentNode,set(),set(),dict(),dict(),criteria,possibleFloorplans)
+#                    print(d,len(possibleFloorplans))
                 else:
                     newPossibleFloorplans=set()
                     for fp in possibleFloorplans:
                         if startNode.id in fp.occupiedNodes: 
-                            continue                    
-                        self.traverseDelegateUnitNodes(fp,occupiedDoorIds,door,currentNode,traversedNodeIds,traversedEdgeIds,traversablePaths,traversedPaths,criteria,newPossibleFloorplans)
+                            continue  
+                        criteria=copy.deepcopy(Constants.UNIT_TYPES[d[demandIndex]])
+                        self.traverseDelegateUnitNodes(fp,list(),door,currentNode,set(),set(),dict(),dict(),criteria,newPossibleFloorplans)
                     if len(newPossibleFloorplans)>0:
                         possibleFloorplans=newPossibleFloorplans
                     else:
 #                        print("--Door not free. Trying next..")
                         demandIndex-=1
-            if demandIndex == len(d)-1:
+            if demandIndex>=len(d)-1:
 #                print("Result(s) found!")
                 allPossibleFloorplans.update(possibleFloorplans)
-#                for fp in possibleFloorplans:
-#                    self.drawTraversedPaths(fp)
-#                    fp.printAllUnits()
-                    #todo: filter results?
-#            else:
-#                print("No Result found!")
         return list(allPossibleFloorplans)
     
     #returns true if combination is possible; otherwise false
@@ -533,7 +531,7 @@ class Layout_graph:
             return False
         
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
-
+#--DEPRECATED DEFS
 #     def loadDrawVectors(self,posPath,vecLengthsPath,imageRootPath):
 #         self.drawPos = {}
 #         self.drawEdges = []
