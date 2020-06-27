@@ -1,0 +1,61 @@
+"""Provides a scripting component.
+    Inputs:
+        x: The x script variable
+        y: The y script variable
+    Output:
+        a: The a output variable"""
+
+__author__ = "drago"
+__version__ = "2020.06.01"
+
+import rhinoscriptsyntax as rs
+import webbrowser
+import System.Net.WebRequest as req
+import System.IO.StreamReader as reader
+import System.IO.StreamWriter as writer
+import json
+
+nodes = []
+edges = []
+int = []
+#####find floorplan lines and centroids
+start = 2
+for i in x:
+    node = {"id":"","roomtype":"","floorArea":"","walls":[],"center":[]}
+    points = []
+    for j in rs.CurveEditPoints(i):
+        points.append(list(j))
+    node["id"] = start
+    node["center"] = list(rs.CurveAreaCentroid(i)[0])
+    node["walls"] =  points
+    node["floorArea"] = rs.CurveArea(i)[0]
+    nodes.append(node)
+    start += 1
+#####find intersections between curves
+for c in range(0,len(x)-1):
+    x1 = x[c::]
+    edge = {"edgeId":"0/0","nodes":["1","1"],
+        "isAccessible":False,"isDoorway":False,
+        "adjWalls":[{"matId":[],"vertices":[],"thickness":[],"composition":[]}]}
+    for k in range(0,len(x1)-1):
+        intersect = rs.CurveCurveIntersection(x1[0],x1[k+1])
+        if intersect != None:
+            if intersect[0][0] == 2:
+                int.append([list(intersect[0][1]),list(intersect[0][2])])
+
+json_dict = {"nodes":nodes,"int":int}
+a = json.dumps(json_dict)
+try:
+    httpreq = req.Create("http://localhost:5000/req/")
+    httpreq.ContentType = "application/json"
+    httpreq.Method = "POST"
+    httpwrite = writer(httpreq.GetRequestStream())
+    httpreq.Timeout = 1000
+    httpwrite.Write(a)
+    httpwrite.Close()
+    httpresponse = httpreq.GetResponse()
+    print(httpresponse)
+except:
+    pass
+
+a = nodes[0]["walls"]

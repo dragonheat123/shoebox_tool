@@ -44,6 +44,7 @@ def get_output():
 
 @app.route('/get/',methods=['GET'])
 def output():
+	print("queried")
 	return json.dumps(out)
 
 

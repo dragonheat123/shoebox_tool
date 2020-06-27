@@ -325,6 +325,7 @@
 					wall_s = [[v[0][0],v[0][1],0],[v[1][0],v[0][1]+sup*dif_y,0]]
 					wall_i = [[v[0][0],v[0][1]+sup*dif_y,0],[v[1][0],v[0][1]+(sup+inf)*dif_y,0]]
 					wall_o = [[v[0][0],v[0][1]+(sup+inf)*dif_y,0],[v[1][0],v[1][1],0]]
+					ver_sep = [wall_s,wall_i,wall_o]
 					if (checked==true){
 						gwp_sep = [Math.abs(sup*dif_y)/2*gwp_val[0],Math.abs(inf*dif_y)/2*gwp_val[1],Math.abs(off*dif_y)/2*gwp_val[2]]}
 					else{
@@ -414,7 +415,8 @@
 						
 		}
 		selected_nodes = []
-		$("#selected_nodes_list")[0].innerHTML = "None yett."
+		$("#selected_nodes_list")[0].innerHTML = "None yet."
+		alert("assigned!")
 
 	}
 
@@ -426,6 +428,7 @@
 			  contentType:"application/json; charset=utf-8",
 			  dataType:"json"
 			})
+			alert("sent!")
 		}
 
 
