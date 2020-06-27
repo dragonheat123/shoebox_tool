@@ -1,0 +1,53 @@
+
+
+<script>
+'use strict';
+let log = console.log.bind(console);
+
+//--creating node data to send
+let node0 = {
+	id : "0",
+	roomType : "outside",
+	floorArea : 0,
+	floorMatId : "CP032",
+	innerWalls:[]
+};
+let node1 = {
+	id:"1",
+	roomType : "service",
+	floorArea : 0,
+	floorMatId : "CP032",
+	innerWalls : []
+};
+let node2 = {
+	id : "2",
+	roomType : "normal",
+	floorArea : 0,
+	floorMatId :"CP032",
+	innerWalls : []
+};
+let nodes=[node0,node1,node2];
+let nodesDataToSend = JSON.stringify(nodes);
+log(nodesDataToSend);
+
+
+//--creating edge data to send
+let edge0 = {
+	edgeId : "0/1",
+	isAccessible : false,
+	adjWalls : []
+};
+let edge1 = {
+	edgeId : "0/2",
+	isAccessible : false,
+	adjWalls : []
+};
+let edge2 = {
+	edgeId : "1/2",
+	isAccessible : true,
+	adjWalls : []
+};
+let edges=[edge0,edge1,edge2];
+let edgesDataToSend = JSON.stringify(edges);
+log(edgesDataToSend);
+</script>
