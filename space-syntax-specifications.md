@@ -1,4 +1,4 @@
-# Space Syntax Graph Specification (Updated 2020/06/05)
+# Space Syntax Graph Specification (Updated 2020/06/27)
 This document specifies technical specifications of space syntax developed to for unit parcelation and Global Warning Potential calculation. For an overview on how to use the tool itself [see here](../README.md).
 
 ## Dependencies:
@@ -45,19 +45,19 @@ Data structure in json follows
 [
 	{
 		"edgeId":"0/2",
-		"isAccessible":false,   //isTraversable edge
+		"isAccessible":false,
 		"adjWalls":[    
 				{
-					"matId":["CP024","CP032"],				// id from lcadb [0]=>structural [1]=>infill
-					"vertices":[[0,0],[0,1]],   // [x1,y1],[x2,y2]
-					"thickness":"1",
-					"composition":[0.1,0.9]		// [0]=>structural [1]=>infill
+					"matId":["CP024","CP032","CP032"],		// id from lcadb [0]=>structural [1]=>infill
+					"vertices":[[0,0],[1,0],[2,0],[3,0]],	// [x1,y1],[x2,y2],[x3,y3],[x4,y4]
+					"thickness":1,
+					"composition":[0.1,0.8,0.1]				// [0]=>structural [1]=>infill [2]=>opening
 				},
 				{
-					"matId":["CP024","CP032"],
-					"vertices":[[0,1],[1,1]],
-					"thickness":"1",
-					"composition":[0.1,0.9]
+					"matId":["CP024","CP032","CP032"],
+					"vertices":[[0,0],[0,1],[0,2],[0,3]],
+					"thickness":1,
+					"composition":[0.1,0.9,0.1]
 				}
 			]
 	},	
@@ -66,10 +66,10 @@ Data structure in json follows
 		"isAccessible":false,
 		"adjWalls":[
 				{
-					"matId":["CP024",""],
+					"matId":["CP024","",""],
 					"vertices":[[2,4],[4,4]],
-					"thickness":"1",
-					"composition":[1,0]
+					"thickness":1,
+					"composition":[1,0,0]
 				}
 			]
 	},
@@ -78,10 +78,10 @@ Data structure in json follows
 		"isAccessible":true,
 		"adjWalls":[
 				{
-					"matId":["CP024","CP032"],
-					"vertices":[[5,5],[6,6]],
-					"thickness":"1",
-					"composition":[0.8,0.2]
+					"matId":["","CP024",""],
+					"vertices":[[],[4,4],[4,5]],
+					"thickness":1,
+					"composition":[0,1,0]
 				}
 			]
 	}

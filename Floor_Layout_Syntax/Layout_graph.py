@@ -20,7 +20,7 @@ from LCA import LCADB
 
 class Layout_graph:
 
-    def __init__(self):        
+    def __init__(self,unitTypes = Constants.UNIT_TYPES):        
         # dictionaries of id:objects
         self.nodes = {}
         self.edges = {}
@@ -41,6 +41,7 @@ class Layout_graph:
         }
         
         # self.colorPool=[[1, 0.627, 0.235], [0.031, 0.612, 0.533], [0.643, 0.137, 0.506], [1, 0.773, 0.235], [0.922, 0.329, 0.467], [0.388, 0.647, 0.329]]
+        self.unitTypes=unitTypes
         self.unitCombinations={}
         self.combinationResult={}
         self.structuralGwp=0.0
@@ -144,7 +145,30 @@ class Layout_graph:
             return self.edges[key]
         else:
             return None
+    
+    def loadJson(self, nodesJson, edgesJson):
+        print("-------------Importing nodes and edges-----------------")
+        print(nodesJson)
+        nodesData = json.loads(nodesJson)
 
+        for n in nodesData:
+            self.addNode(newNodeID=str(n['id']), roomtype=n['roomType'], floorArea=n['floorArea'], floorMaterialID=n['floorMatId'])
+            for w in n['innerWalls']:
+                self.nodes[n['id']].innerWalls.append(wall.Wall(vertices=w['vertices'], matId=w['matId'], thickness=w['thickness'], composition=w['composition']))
+        print("Nodes added:",self.nodes.keys())
+        edgesData = json.loads(edgesJson)
+        for e in edgesData:
+            adjWalls = list()
+            for w in e['adjWalls']:
+                adjWalls.append(wall.Wall(vertices=w['vertices'], matId=w['matId'], thickness=w['thickness'], composition=w['composition']))
+            self.addEdgeById(edgeId=e['edgeId'], isAccessible=e['isAccessible'], adjWalls=adjWalls)
+        #TODO: following function may be dynamic so consider better lcaDb system and structure hierarchy
+        print("Edges added:",self.edges.keys())
+        print("Door edges:",self.doorEdgeIds)
+        # tempDb= LCADB.LCADB(lcaDbPath)
+        #self.getStructuralGwp(tempDb)
+        print("------------Conversion to Graph syntax success---------------")
+    
     def importJSON(self, nodes_JSONfilepath , edges_JSONfilepath, lcaDbPath):
         print("-------------Importing nodes and edges-----------------")
         with open(nodes_JSONfilepath) as nodes_json_file:
@@ -431,7 +455,7 @@ class Layout_graph:
                 currentNode=startNode
                 
                 if demandIndex==0:
-                    criteria=copy.deepcopy(Constants.UNIT_TYPES[d[demandIndex]])
+                    criteria=copy.deepcopy(self.unitTypes[d[demandIndex]])
                     self.traverseDelegateUnitNodes(floorplan,list(),door,currentNode,set(),set(),dict(),dict(),criteria,possibleFloorplans)
 #                    print(d,len(possibleFloorplans))
                 else:
@@ -439,7 +463,7 @@ class Layout_graph:
                     for fp in possibleFloorplans:
                         if startNode.id in fp.occupiedNodes: 
                             continue  
-                        criteria=copy.deepcopy(Constants.UNIT_TYPES[d[demandIndex]])
+                        criteria=copy.deepcopy(self.unitTypes[d[demandIndex]])
                         self.traverseDelegateUnitNodes(fp,list(),door,currentNode,set(),set(),dict(),dict(),criteria,newPossibleFloorplans)
                     if len(newPossibleFloorplans)>0:
                         possibleFloorplans=newPossibleFloorplans
@@ -477,13 +501,13 @@ class Layout_graph:
     
     def generateParcelationDb(self,emptySpaceThreshold,saveParcelationDbPath=None):
         unitCombiResults = {}
-        for i in range(0,len(Constants.UNIT_TYPES)):
-            checkSolutionSpace(self.roomCount.copy(),Constants.UNIT_TYPES,emptySpaceThreshold,i,[],unitCombiResults)
+        for i in range(0,len(self.unitTypes)):
+            checkSolutionSpace(self.roomCount.copy(),self.unitTypes,emptySpaceThreshold,i,[],unitCombiResults)
         print("Unchecked solution space:",unitCombiResults)
         i=0
         for unitCombination, emptySpace in unitCombiResults.items():
             countVector = []
-            for unitType in range(len(Constants.UNIT_TYPES)):
+            for unitType in range(len(self.unitTypes)):
                 countVector.append(unitCombination.count(str(unitType)))    #TODO: This method must be changed if unit types reach double digits
             self.unitCombinations[i]={
                     'countVector':countVector,

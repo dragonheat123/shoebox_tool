@@ -30,6 +30,25 @@ class Building:
         #--evaluative phase to find out all possible unit combinations for a layout
         #====================================================================================================
         self.layoutGraph.generateParcelationDb(Constants.EMPTY_SPACE_THRESHOLD)
+
+    def getResultBuilding(self):
+        result = dict()
+        result['floorCount'] = self.floorCount
+        result['floorHeight'] = self.floorHeight
+        result['floorThickness'] = self.floorThickness
+        result['layouts'] = list()
+        idx = 0
+        for floorIndex in sorted(self.parcelizedBuilding.keys()):
+            #print("--floor "+str(floorIndex)+" parcelation--")
+            layouts = dict()
+            layouts['units'] = self.parcelizedBuilding[floorIndex].exportUnitData()
+            layouts['gwp'] = dict()
+            layouts['gwp']['infill'] = self.getGwp(floorIndex,['infill'])
+            layouts['gwp']['structural'] = self.getGwp(floorIndex,['structural'])
+            result['layouts'].append(layouts)
+            #print(json.dumps(result['layouts'][idx]))
+            idx += 1
+        return result
         
     def toJson(self,savefilePath):
         result = dict()
