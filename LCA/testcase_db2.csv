@@ -14,7 +14,7 @@ CP009,a12,25mm Door,378.07,0.025,9.45175,Opening
 CP010,a13,200mm Ready Mixed Concrete ,561.44,0.2,112.288,Support
 CP011,a14,240mm Glued Laminated Timber (Glulam) (2x240x400mm Columns),-763.5771,0.24,-183.258504,Support
 CP012,a15,240mm Cross Laminated Timber (CLT) ,-546.7675,0.24,-131.2242,Support
-CP013,a16,200mm Ready Mixed Concrete Slab,561.44,0.2,112.288,Floor Slab
-CP014,a17,240mm Cross Laminated Timber (CLT) Slab,-546.7675,0.24,-131.2242,Floor Slab
-CP015,a18,Concrete (80mm) and Glulam (240x280mm) Hybrid Slab,15.84472353,0.136,2.1548824,Floor Slab
-CP016,a19,Concrete (80mm) and CLT (180mm) Hybrid Slab,-205.7805769,0.26,-53.50295,Floor Slab
+CP013,a16,200mm Ready Mixed Concrete Slab,561.44,0.2,112.288,Slab
+CP014,a17,240mm Cross Laminated Timber (CLT) Slab,-546.7675,0.24,-131.2242,Slab
+CP015,a18,Concrete (80mm) and Glulam (240x280mm) Hybrid Slab,15.84472353,0.136,2.1548824,Slab
+CP016,a19,Concrete (80mm) and CLT (180mm) Hybrid Slab,-205.7805769,0.26,-53.50295,Slab
