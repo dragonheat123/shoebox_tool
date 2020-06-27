@@ -20,31 +20,38 @@
 	<br>
 	<div class="container-fluid">
 	<div class="row">
-		<div class = ".col-lg-1 offset-1">
+		<div class = ".col-xl-1 offset-1">
 		</div>
-		<div class = ".col-lg-7">
-			<button id="reset" type="button" onclick="reset()" style="display: block;">Reset</button>
-			<svg id="svg1" style="display: block;"></svg>
+		<div class = ".col-xl-7">
+			<!--button id="reset" type="button" onclick="reset()" style="display: block;">Reset</button-->
+			<p> Click on the node to assign shoebox material</p>
+			<svg id="svg1" style="display: block;border:1px solid black"></svg>
 			<div class="control"></div>
 		</div>
-		<div class = ".col-lg-1 offset-1"></div>
-		<div class = ".col-lg-3">
+		<div class = ".col-xl-1 offset-1"></div>
+		<div class = ".col-xl-3">
 			<!--button id="select_shoeboxes" type="button" onclick="reset()" style="display: block;">Select Shoeboxes</button-->
 			<p>Selected Node(s)</p><br>
 			<div id="selected_nodes_list" style="word-wrap: break-word;">None yet...</div><br>
 			<span style="font-weight:bold;">Room Type:</span><br>
 			<p><input type="text" id="room_type"></p><br>
 
+			<span style="font-weight:bold;">Floor Slab</span><br>
+			<p>Material: <select id="floor_mat" style="max-width:20%"></select></p><br>
+
 			<span style="font-weight:bold;">North Wall</span><br>
 			<div> Is this wall intersecting another? <input id="intersect_N" type="checkbox" value="True"> </div>
+			<div> Is this wall a door to the outside? <input id="entrance_N" type="checkbox" value="True"> </div>
   			<div id="composition_N_val" style="font-weight:bold;">Support: 25% Infill: 50% Openings: 25%</div></span>
-  			<div id="slider-range" class="composition_N" style="max-width:50%"></div>
+  			<div id="slider-range" class="composition_N" style="max-width:50%"></div><br>
+  			<!--div><input type="composition_N_val_text" id="room_type"></div><br-->
 			<span>Support Material: <select id="support_N_mat" style="max-width:20%"></select></span><br>
 			<span>Infill Material:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <select id="infill_N_mat" style="max-width:20%"></select></span><br>
 			<p>Opening Material: <select id="openings_N_mat" style="max-width:20%"></select></p><br>
 			
 			<span style="font-weight:bold;">South Wall</span><br>
 			<div> Is this wall intersecting another? <input id="intersect_S" type="checkbox" value="True"> </div>
+			<div> Is this wall a door to the outside? <input id="entrance_S" type="checkbox" value="True"> </div>
   			<div id="composition_S_val" style="font-weight:bold;">Support: 25% Infill: 50% Openings: 25%</div></span>
   			<div id="slider-range" class="composition_S" style="max-width:50%"></div>
 			<span>Support Material: <select id="support_S_mat" style="max-width:20%"></select></span><br>
@@ -53,6 +60,7 @@
 			
 			<span style="font-weight:bold;">East Wall</span><br>
 			<div> Is this wall intersecting another? <input id="intersect_E" type="checkbox" value="True"> </div>
+			<div> Is this wall a door to the outside? <input id="entrance_E" type="checkbox" value="True"> </div>
   			<div id="composition_E_val" style="font-weight:bold;">Support: 25% Infill: 50% Openings: 25%</div></span>
   			<div id="slider-range" class="composition_E" style="max-width:50%"></div>
 			<span>Support Material: <select id="support_E_mat" style="max-width:20%"></select></span><br>
@@ -61,13 +69,15 @@
 			
 			<span style="font-weight:bold;">West Wall</span><br>
 			<div> Is this wall intersecting another? <input id="intersect_W" type="checkbox" value="True"> </div>
+			<div> Is this wall a door to the outside? <input id="entrance_W" type="checkbox" value="True"> </div>
   			<div id="composition_W_val" style="font-weight:bold;">Support: 25% Infill: 50% Openings: 25%</div></span>
   			<div id="slider-range" class="composition_W" style="max-width:50%"></div>
 			<span>Support Material: <select id="support_W_mat" style="max-width:20%"></select></span><br>
 			<span>Infill Material:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <select id="infill_W_mat" style="max-width:20%"></select></span><br>
 			<p>Opening Material: <select id="openings_W_mat" style="max-width:20%"></select></p><br>
 			<p></p>
-			<button id="ok" type="button" onclick="submit_data()" style="display: block;">Submit Changes</button>
+			<p><button id="assign_data" type="button" onclick="assign_data()" style="display: block;">Assign Changes</button></p>
+			<P><button id="send_data" type="button" onclick="send_data()" style="display: block;">Send to Grasshopper...</button></P>
 
 		</div>
 
@@ -104,11 +114,13 @@
 	support_S = document.getElementById("support_S_mat");infill_S = document.getElementById("infill_S_mat");openings_S = document.getElementById("openings_S_mat");
 	support_E = document.getElementById("support_E_mat");infill_E = document.getElementById("infill_E_mat");openings_E = document.getElementById("openings_E_mat");
 	support_W = document.getElementById("support_W_mat");infill_W = document.getElementById("infill_W_mat");openings_W = document.getElementById("openings_W_mat");
+	floor_slab = document.getElementById("floor_mat");
 
 	addDB(support_N,"Support");addDB(infill_N,"Infill");addDB(openings_N,"Opening");
 	addDB(support_S,"Support");addDB(infill_S,"Infill");addDB(openings_S,"Opening")
 	addDB(support_E,"Support");addDB(infill_E,"Infill");addDB(openings_E,"Opening")
 	addDB(support_W,"Support");addDB(infill_W,"Infill");addDB(openings_W,"Opening")
+	addDB(floor_slab,"Slab")
 
 	$( function() {
     $( "#slider-range.composition_N" ).slider({
@@ -152,8 +164,8 @@
 
 
 
-	const svg = d3.select('#svg1')
-    .attr('width', window.innerWidth/2.2)
+	const svg = d3.select('#svg1') 
+    .attr('width', window.innerWidth/2.5)
     .attr('height', window.innerHeight)
     .style('background-color', 'white')
     .call(d3.zoom().on("zoom", function () {
@@ -181,27 +193,26 @@
 	.attr("x2", x2)
 	.attr("y2", y2)
 	.attr("id", 'line'+String(i)+"-"+String(j))
-	.on("click", function(){addLineControl(String(i)+"-"+String(j));d3.select("#line"+String(i)+"-"+String(j)).style("stroke-width",1).style("stroke","red")});
+	//.on("click", function(){addLineControl(String(i)+"-"+String(j));d3.select("#line"+String(i)+"-"+String(j)).style("stroke-width",1).style("stroke","red")});
 	};
 
 	function addCircle(x1,y1,svg,i){
 	svg.append("circle")
-	.style("fill","blue")
+	.style("fill","#0175CC")
 	.attr("cx",x1)
 	.attr("cy",y1)
 	.attr("r",0.5)
 	.attr("id", 'cen'+String(i))
-	.text("-")
 	.on("click", function(){
 		addNodeControl(i);});
 
 	svg.append("text")
-	.style("fill","white")
+	.style("fill","black")
 	.attr("x",x1)
 	.attr("y",y1)
-	.attr("font-size","0.05em")
+	.attr("font-size","0.03em")
 	.attr("id",'centext'+String(i))
-	.text("-")	
+	.text(String(i))	
 	
 	}
 
@@ -230,10 +241,17 @@
 			var removeItem = id;
 			selected_nodes = jQuery.grep(selected_nodes, function(value) {return value != removeItem;});
 			d3.select("#cen"+String(id)).attr("r",0.5);
-			d3.select("#line"+String(id)+"-"+String(0)).style("stroke-width",0.1).style("stroke","lightgreen").raise()
-			d3.select("#line"+String(id)+"-"+String(1)).style("stroke-width",0.1).style("stroke","lightgreen").raise()
-			d3.select("#line"+String(id)+"-"+String(2)).style("stroke-width",0.1).style("stroke","lightgreen").raise()
-			d3.select("#line"+String(id)+"-"+String(3)).style("stroke-width",0.1).style("stroke","lightgreen").raise()
+			d3.select("#line"+String(id)+"-"+String(0)).style("stroke-width",0.1).style("stroke","#85E2B5").raise()
+			d3.select("#line"+String(id)+"-"+String(1)).style("stroke-width",0.1).style("stroke","#85E2B5").raise()
+			d3.select("#line"+String(id)+"-"+String(2)).style("stroke-width",0.1).style("stroke","#85E2B5").raise()
+			d3.select("#line"+String(id)+"-"+String(3)).style("stroke-width",0.1).style("stroke","#85E2B5").raise()
+			if (assigned_nodes.includes(id)){
+				d3.select("#cen"+String(id)).attr("r",0.5);
+				d3.select("#line"+String(id)+"-"+String(0)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
+				d3.select("#line"+String(id)+"-"+String(1)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
+				d3.select("#line"+String(id)+"-"+String(2)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
+				d3.select("#line"+String(id)+"-"+String(3)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
+			}
 		}
 		$("#selected_nodes_list").html(selected_nodes.join())
 		if ($("#selected_nodes_list")[0].innerHTML == ""){$("#selected_nodes_list")[0].innerHTML = "None yet..."}
@@ -251,7 +269,7 @@
 	//	addInt(intc[k][0][0],-intc[k][0][1],intc[k][1][0],-intc[k][1][1],svg,k,color)
 	//}
 
-	function submit_data(){
+	function assign_data(){
 		for (i=0;i<selected_nodes.length;i++){
 			info = data.nodes.find(el=>el.id==selected_nodes[i])
 			info["roomtype"] = $("#room_type")[0].value
@@ -347,9 +365,45 @@
 
 			info["totalGWP"] = gwpS+gwpN+gwpE+gwpW
 
-			alert("submitted!")
-			
-		}}
+			//alert("labelled: Node-" + String(info["id"])+"!" )
+
+			data.nodes[i] = info
+
+			//assigned_nodes.push(i)
+
+			if (assigned_nodes.includes(info["id"]) == false){
+				assigned_nodes.push(info["id"])
+			}
+
+			info["floorMat"] = $("#floor_mat option:selected").text()
+			info["floorGWP"] = $(lcaData.GWParea[$("#floor_mat").val()])*info.floorArea
+
+			$("#centext"+String(info["id"])).html(info["id"]+"-"+info["roomtype"])
+
+			d3.select("#cen"+String(info["id"])).attr("r",0.5);
+			d3.select("#line"+String(info["id"])+"-"+String(0)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
+			d3.select("#line"+String(info["id"])+"-"+String(1)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
+			d3.select("#line"+String(info["id"])+"-"+String(2)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
+			d3.select("#line"+String(info["id"])+"-"+String(3)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
+
+
+
+						
+		}selected_nodes = []}
+
+		function send_data(){
+			$.ajax({
+			  url:"/get/",
+			  type:"POST",
+			  data:JSON.stringify(data.nodes),
+			  contentType:"application/json; charset=utf-8",
+			  dataType:"json"
+			})
+		}
+
+
+
+	
 
 // {"id":2,"center":[1,1.5,0],"floorArea":6,"roomtype":"P",
 //         "totalGWP": 34,
