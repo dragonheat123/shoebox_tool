@@ -131,7 +131,7 @@
       slide: function( event, ui ) {
       slideN1 =  $(this).slider( "values", 0 )
       slideN2 = $(this).slider( "values", 1 )
-      console.log(slideN1)
+      console.log(slideN2)
       var response = "Support: ".concat(String(slideN1),"% ","Infill: " ,String(slideN2-slideN1),"% ","Openings: ",String(100-slideN2),"%");
       	$("#composition_N_val").html(response);}});});
 	
@@ -275,7 +275,6 @@
 	function assign_data(){
 		for (i=0;i<selected_nodes.length;i++){
 			info = data.nodes.find(el=>el.id==selected_nodes[i]);
-			console.log(info["roomtype"]);}}
 			info["roomtype"] = $("#room_type")[0].value;
 			south_ratio = [$( "#slider-range.composition_S" ).slider( "values", 0 )/100,$( "#slider-range.composition_S" ).slider( "values", 1 )/100-$( "#slider-range.composition_S" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_S" ).slider( "values", 1 )/100];
 			east_ratio = [$( "#slider-range.composition_E" ).slider( "values", 0 )/100,$( "#slider-range.composition_E" ).slider( "values", 1 )/100-$( "#slider-range.composition_E" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_E" ).slider( "values", 1 )/100];
@@ -389,11 +388,12 @@
 			d3.select("#line"+String(info["id"])+"-"+String(1)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
 			d3.select("#line"+String(info["id"])+"-"+String(2)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
 			d3.select("#line"+String(info["id"])+"-"+String(3)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
-
-
-
 						
-		}selected_nodes = []}
+		}
+		selected_nodes = []
+		$("#selected_nodes_list")[0].innerHTML = "None yett."
+
+	}
 
 		function send_data(){
 			$.ajax({
