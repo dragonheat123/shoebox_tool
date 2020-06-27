@@ -380,7 +380,7 @@
 			}
 
 			info["floorMat"] = $("#floor_mat option:selected").text()
-			info["floorGWP"] = $(lcaData.GWParea[$("#floor_mat").val()])*info.floorArea
+			info["floorGWP"] = $(lcaData.GWParea[$("#floor_mat").val()])[0]*info.floorArea
 
 			$("#centext"+String(info["id"])).html(info["id"]+"-"+info["roomtype"])
 
