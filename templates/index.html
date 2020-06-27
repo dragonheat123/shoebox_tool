@@ -79,6 +79,7 @@
 			<p><button id="assign_data" type="button" onclick="assign_data()" style="display: block;">Assign Changes</button></p>
 			<P><button id="send_data" type="button" onclick="send_data()" style="display: block;">Send to Grasshopper...</button></P>
 
+
 		</div>
 
 	</div>
@@ -128,10 +129,9 @@
       min: 0,
       max: 100,
       values: [ 25, 75 ],
-      slide: function( event, ui ) {
+      stop: function( event, ui ) {
       slideN1 =  $(this).slider( "values", 0 )
       slideN2 = $(this).slider( "values", 1 )
-      console.log(slideN2)
       var response = "Support: ".concat(String(slideN1),"% ","Infill: " ,String(slideN2-slideN1),"% ","Openings: ",String(100-slideN2),"%");
       	$("#composition_N_val").html(response);}});});
 	
@@ -141,9 +141,10 @@
       min: 0,
       max: 100,
       values: [ 25, 75 ],
-      slide: function( event, ui ) {
+      	stop: function( event, ui ) {
       var response = "Support: ".concat(String($( "#slider-range.composition_S" ).slider( "values", 0 )),"% ","Infill: " ,String($( "#slider-range.composition_S" ).slider( "values", 1 )-$( "#slider-range.composition_S").slider( "values", 0 )),"% ","Openings: ",String(100-$( "#slider-range.composition_S" ).slider( "values", 1 )),"%");
-      	$("#composition_S_val").html(response);}});});
+      	$("#composition_S_val").html(response);},
+      });});
 	
 	$( function() {
     $( "#slider-range.composition_E" ).slider({
@@ -151,7 +152,7 @@
       min: 0,
       max: 100,
       values: [ 25, 75 ],
-      slide: function( event, ui ) {
+      stop: function( event, ui ) {
       var response = "Support: ".concat(String($( "#slider-range.composition_E" ).slider( "values", 0 )),"% ","Infill: " ,String($( "#slider-range.composition_E" ).slider( "values", 1 )-$( "#slider-range.composition_E").slider( "values", 0 )),"% ","Openings: ",String(100-$( "#slider-range.composition_E" ).slider( "values", 1 )),"%");
       	$("#composition_E_val").html(response);}});});
      
@@ -161,7 +162,7 @@
       min: 0,
       max: 100,
       values: [ 25, 75 ],
-      slide: function( event, ui ) {
+      stop: function( event, ui ) {
       var response = "Support: ".concat(String($( "#slider-range.composition_W" ).slider( "values", 0 )),"% ","Infill: " ,String($( "#slider-range.composition_W" ).slider( "values", 1 )-$( "#slider-range.composition_W").slider( "values", 0 )),"% ","Openings: ",String(100-$( "#slider-range.composition_W" ).slider( "values", 1 )),"%");
       	$("#composition_W_val").html(response);}});});
 
@@ -275,7 +276,7 @@
 	function assign_data(){
 		for (i=0;i<selected_nodes.length;i++){
 			info = data.nodes.find(el=>el.id==selected_nodes[i]);
-			info["roomtype"] = $("#room_type")[0].value;
+			info["roomtype"] = $("#room_type").val();
 			south_ratio = [$( "#slider-range.composition_S" ).slider( "values", 0 )/100,$( "#slider-range.composition_S" ).slider( "values", 1 )/100-$( "#slider-range.composition_S" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_S" ).slider( "values", 1 )/100];
 			east_ratio = [$( "#slider-range.composition_E" ).slider( "values", 0 )/100,$( "#slider-range.composition_E" ).slider( "values", 1 )/100-$( "#slider-range.composition_E" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_E" ).slider( "values", 1 )/100];
 			north_ratio = [$( "#slider-range.composition_N" ).slider( "values", 0 )/100,$( "#slider-range.composition_N" ).slider( "values", 1 )/100-$( "#slider-range.composition_N" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_N" ).slider( "values", 1 )/100];
@@ -370,7 +371,7 @@
 
 			//alert("labelled: Node-" + String(info["id"])+"!" )
 
-			data.nodes[i] = info
+			data.nodes[data.nodes.indexOf(data.nodes.find(el=>el.id==selected_nodes[i]))] = info
 
 			//assigned_nodes.push(i)
 
