@@ -1,0 +1,6 @@
+import rhinoscriptsyntax as rs
+import time
+import json
+
+webclient = System.Net.WebClient()
+output = webclient.DownloadString("http://localhost:5000/get/")

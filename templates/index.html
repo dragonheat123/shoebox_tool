@@ -38,10 +38,10 @@
 
 			<span style="font-weight:bold;">Floor Slab</span><br>
 			<p>Material: <select id="floor_mat" style="max-width:20%"></select></p><br>
-
-			<span style="font-weight:bold;">North Wall</span><br>
-			<div> Is this wall intersecting another? <input id="intersect_N" type="checkbox" value="True"> </div>
-			<div> Is this wall a door to the outside? <input id="entrance_N" type="checkbox" value="True"> </div>
+			<div><img src="{{url_for('static', filename='walls.png')}}" width=20%></div><br>
+			<span style="font-weight:bold;">Wall A</span><br>
+			<div> Is this wall intersecting another? <input id="intersect_N" type="checkbox"> </div>
+			<div> Does this wall contains an entrance? <input id="entrance_N" type="checkbox"> </div>
   			<div id="composition_N_val" style="font-weight:bold;">Support: 25% Infill: 50% Openings: 25%</div></span>
   			<div id="slider-range" class="composition_N" style="max-width:50%"></div>
   			<!--div><input type="composition_N_val_text" id="room_type"></div><br-->
@@ -49,27 +49,27 @@
 			<span>Infill Material:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <select id="infill_N_mat" style="max-width:20%"></select></span><br>
 			<p>Opening Material: <select id="openings_N_mat" style="max-width:20%"></select></p><br>
 			
-			<span style="font-weight:bold;">South Wall</span><br>
-			<div> Is this wall intersecting another? <input id="intersect_S" type="checkbox" value="True"> </div>
-			<div> Is this wall a door to the outside? <input id="entrance_S" type="checkbox" value="True"> </div>
+			<span style="font-weight:bold;">Wall B</span><br>
+			<div> Is this wall intersecting another? <input id="intersect_S" type="checkbox"> </div>
+			<div> Does this wall contains an entrance?<input id="entrance_S" type="checkbox"> </div>
   			<div id="composition_S_val" style="font-weight:bold;">Support: 25% Infill: 50% Openings: 25%</div></span>
   			<div id="slider-range" class="composition_S" style="max-width:50%"></div>
 			<span>Support Material: <select id="support_S_mat" style="max-width:20%"></select></span><br>
 			<span>Infill Material:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <select id="infill_S_mat" style="max-width:20%"></select></span><br>
 			<p>Opening Material: <select id="openings_S_mat" style="max-width:20%"></select></p><br>
 			
-			<span style="font-weight:bold;">East Wall</span><br>
-			<div> Is this wall intersecting another? <input id="intersect_E" type="checkbox" value="True"> </div>
-			<div> Is this wall a door to the outside? <input id="entrance_E" type="checkbox" value="True"> </div>
+			<span style="font-weight:bold;">Wall C</span><br>
+			<div> Is this wall intersecting another? <input id="intersect_E" type="checkbox"> </div>
+			<div> Does this wall contains an entrance? <input id="entrance_E" type="checkbox"> </div>
   			<div id="composition_E_val" style="font-weight:bold;">Support: 25% Infill: 50% Openings: 25%</div></span>
   			<div id="slider-range" class="composition_E" style="max-width:50%"></div>
 			<span>Support Material: <select id="support_E_mat" style="max-width:20%"></select></span><br>
 			<span>Infill Material:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <select id="infill_E_mat" style="max-width:20%" ></select></span><br>
 			<p>Opening Material: <select id="openings_E_mat" style="max-width:20%"></select></p><br>
 			
-			<span style="font-weight:bold;">West Wall</span><br>
-			<div> Is this wall intersecting another? <input id="intersect_W" type="checkbox" value="True"> </div>
-			<div> Is this wall a door to the outside? <input id="entrance_W" type="checkbox" value="True"> </div>
+			<span style="font-weight:bold;">Wall D</span><br>
+			<div> Is this wall intersecting another? <input id="intersect_W" type="checkbox"> </div>
+			<div> Does this wall contains an entrance? <input id="entrance_W" type="checkbox"> </div>
   			<div id="composition_W_val" style="font-weight:bold;">Support: 25% Infill: 50% Openings: 25%</div></span>
   			<div id="slider-range" class="composition_W" style="max-width:50%"></div>
 			<span>Support Material: <select id="support_W_mat" style="max-width:20%"></select></span><br>
@@ -78,6 +78,7 @@
 			<p></p>
 			<p><button id="assign_data" type="button" onclick="assign_data()" style="display: block;">Assign Changes</button></p>
 			<P><button id="send_data" type="button" onclick="send_data()" style="display: block;">Send to Grasshopper...</button></P>
+
 
 		</div>
 
@@ -128,10 +129,9 @@
       min: 0,
       max: 100,
       values: [ 25, 75 ],
-      slide: function( event, ui ) {
+      stop: function( event, ui ) {
       slideN1 =  $(this).slider( "values", 0 )
       slideN2 = $(this).slider( "values", 1 )
-      console.log(slideN2)
       var response = "Support: ".concat(String(slideN1),"% ","Infill: " ,String(slideN2-slideN1),"% ","Openings: ",String(100-slideN2),"%");
       	$("#composition_N_val").html(response);}});});
 	
@@ -141,9 +141,10 @@
       min: 0,
       max: 100,
       values: [ 25, 75 ],
-      slide: function( event, ui ) {
+      	stop: function( event, ui ) {
       var response = "Support: ".concat(String($( "#slider-range.composition_S" ).slider( "values", 0 )),"% ","Infill: " ,String($( "#slider-range.composition_S" ).slider( "values", 1 )-$( "#slider-range.composition_S").slider( "values", 0 )),"% ","Openings: ",String(100-$( "#slider-range.composition_S" ).slider( "values", 1 )),"%");
-      	$("#composition_S_val").html(response);}});});
+      	$("#composition_S_val").html(response);},
+      });});
 	
 	$( function() {
     $( "#slider-range.composition_E" ).slider({
@@ -151,7 +152,7 @@
       min: 0,
       max: 100,
       values: [ 25, 75 ],
-      slide: function( event, ui ) {
+      stop: function( event, ui ) {
       var response = "Support: ".concat(String($( "#slider-range.composition_E" ).slider( "values", 0 )),"% ","Infill: " ,String($( "#slider-range.composition_E" ).slider( "values", 1 )-$( "#slider-range.composition_E").slider( "values", 0 )),"% ","Openings: ",String(100-$( "#slider-range.composition_E" ).slider( "values", 1 )),"%");
       	$("#composition_E_val").html(response);}});});
      
@@ -161,7 +162,7 @@
       min: 0,
       max: 100,
       values: [ 25, 75 ],
-      slide: function( event, ui ) {
+      stop: function( event, ui ) {
       var response = "Support: ".concat(String($( "#slider-range.composition_W" ).slider( "values", 0 )),"% ","Infill: " ,String($( "#slider-range.composition_W" ).slider( "values", 1 )-$( "#slider-range.composition_W").slider( "values", 0 )),"% ","Openings: ",String(100-$( "#slider-range.composition_W" ).slider( "values", 1 )),"%");
       	$("#composition_W_val").html(response);}});});
 
@@ -189,7 +190,7 @@
     
     function addLine(x1,y1,x2,y2,svg,i,j,selected_line){
 	svg.append("line")
-	.style("stroke", "lightgreen")
+	.style("stroke", "#85E2B5")
 	.style("stroke-width", 0.1)
 	.attr("x1", x1)
 	.attr("y1", y1)
@@ -204,7 +205,7 @@
 	.style("fill","#0175CC")
 	.attr("cx",x1)
 	.attr("cy",y1)
-	.attr("r",0.5)
+	.attr("r",0.7)
 	.attr("id", 'cen'+String(i))
 	.on("click", function(){
 		addNodeControl(i);});
@@ -231,6 +232,17 @@
 	.on("click", function(){console.log("clicked");d3.select("#int"+String(i)).style("stroke-width",1)});
 	};
 
+	function addSeg(x1,y1,x2,y2,svg,i,c){
+     svg.append("line")
+	.style("stroke", c(i))
+	.style("stroke-width", 0.1)
+	.attr("x1", x1)
+	.attr("y1", y1)
+	.attr("x2", x2)
+	.attr("y2", y2)
+	.attr("id", 'int'+String(i))
+	}
+
 	function addNodeControl(id){
 		if (selected_nodes.includes(id) == false){
 			selected_nodes.push(id)
@@ -243,13 +255,13 @@
 		else{
 			var removeItem = id;
 			selected_nodes = jQuery.grep(selected_nodes, function(value) {return value != removeItem;});
-			d3.select("#cen"+String(id)).attr("r",0.5);
+			d3.select("#cen"+String(id)).attr("r",0.7);
 			d3.select("#line"+String(id)+"-"+String(0)).style("stroke-width",0.1).style("stroke","#85E2B5").raise()
 			d3.select("#line"+String(id)+"-"+String(1)).style("stroke-width",0.1).style("stroke","#85E2B5").raise()
 			d3.select("#line"+String(id)+"-"+String(2)).style("stroke-width",0.1).style("stroke","#85E2B5").raise()
 			d3.select("#line"+String(id)+"-"+String(3)).style("stroke-width",0.1).style("stroke","#85E2B5").raise()
 			if (assigned_nodes.includes(id)){
-				d3.select("#cen"+String(id)).attr("r",0.5);
+				d3.select("#cen"+String(id)).attr("r",0.7);
 				d3.select("#line"+String(id)+"-"+String(0)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
 				d3.select("#line"+String(id)+"-"+String(1)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
 				d3.select("#line"+String(id)+"-"+String(2)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
@@ -275,7 +287,7 @@
 	function assign_data(){
 		for (i=0;i<selected_nodes.length;i++){
 			info = data.nodes.find(el=>el.id==selected_nodes[i]);
-			info["roomtype"] = $("#room_type")[0].value;
+			info["roomtype"] = $("#room_type").val();
 			south_ratio = [$( "#slider-range.composition_S" ).slider( "values", 0 )/100,$( "#slider-range.composition_S" ).slider( "values", 1 )/100-$( "#slider-range.composition_S" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_S" ).slider( "values", 1 )/100];
 			east_ratio = [$( "#slider-range.composition_E" ).slider( "values", 0 )/100,$( "#slider-range.composition_E" ).slider( "values", 1 )/100-$( "#slider-range.composition_E" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_E" ).slider( "values", 1 )/100];
 			north_ratio = [$( "#slider-range.composition_N" ).slider( "values", 0 )/100,$( "#slider-range.composition_N" ).slider( "values", 1 )/100-$( "#slider-range.composition_N" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_N" ).slider( "values", 1 )/100];
@@ -296,12 +308,14 @@
 			east_mat_gwp = [lcaData.GWParea[$("#support_E_mat").val()],lcaData.GWParea[$("#infill_E_mat").val()],lcaData.GWParea[$("#openings_E_mat").val()]]
 			west_mat_gwp = [lcaData.GWParea[$("#support_W_mat").val()],lcaData.GWParea[$("#infill_W_mat").val()],lcaData.GWParea[$("#openings_W_mat").val()]]
 
+			north_check = $("intesect_N").val()
+
 			wall_S_vertices = [info.walls[0],info.walls[1]]
 			wall_E_vertices = [info.walls[1],info.walls[2]]
 			wall_N_vertices = [info.walls[2],info.walls[3]]
 			wall_W_vertices = [info.walls[3],info.walls[4]]
 
-			function compToVertices (v,ratio,gwp_val){
+			function compToVertices (v,ratio,gwp_val,checked){
 				ver_sep = []
 				if (v[0][0] == v[1][0]){ //check for vertical wall
 					dif_y = v[1][1] - v[0][1]
@@ -312,7 +326,10 @@
 					wall_i = [[v[0][0],v[0][1]+sup*dif_y,0],[v[1][0],v[0][1]+(sup+inf)*dif_y,0]]
 					wall_o = [[v[0][0],v[0][1]+(sup+inf)*dif_y,0],[v[1][0],v[1][1],0]]
 					ver_sep = [wall_s,wall_i,wall_o]
-					gwp_sep = [Math.abs(sup*dif_y)*gwp_val[0],Math.abs(inf*dif_y)*gwp_val[1],Math.abs(off*dif_y)*gwp_val[2]]
+					if (checked==true){
+						gwp_sep = [Math.abs(sup*dif_y)/2*gwp_val[0],Math.abs(inf*dif_y)/2*gwp_val[1],Math.abs(off*dif_y)/2*gwp_val[2]]}
+					else{
+						gwp_sep = [Math.abs(sup*dif_y)*gwp_val[0],Math.abs(inf*dif_y)*gwp_val[1],Math.abs(off*dif_y)*gwp_val[2]]}
 					return [ver_sep,gwp_sep]
 				};
 				if (v[0][1] == v[1][1]){ //check for horizontal wall
@@ -324,53 +341,60 @@
 					wall_i = [[v[0][0]+sup*dif_x,v[0][1],0],[v[0][0]+(sup+inf)*dif_x,v[1][1],0]]
 					wall_o = [[v[0][0]+(sup+inf)*dif_x,v[0][1],0],[v[1][0],v[1][1],0]]
 					ver_sep = [wall_s,wall_i,wall_o]
-					gwp_sep = [Math.abs(sup*dif_x)*gwp_val[0],Math.abs(inf*dif_x)*gwp_val[1],Math.abs(off*dif_x)*gwp_val[2]]
+					if (checked == true){
+						gwp_sep = [Math.abs(sup*dif_x)/2*gwp_val[0],Math.abs(inf*dif_x)/2*gwp_val[1],Math.abs(off*dif_x)/2*gwp_val[2]]}
+					else{
+						gwp_sep = [Math.abs(sup*dif_x)*gwp_val[0],Math.abs(inf*dif_x)*gwp_val[1],Math.abs(off*dif_x)*gwp_val[2]]}
 					return [ver_sep,gwp_sep]
 				}
 
 			}
 
-			output = compToVertices(wall_S_vertices,south_ratio,south_mat_gwp)
+			output = compToVertices(wall_S_vertices,south_ratio,south_mat_gwp,$("#intersect_S").prop("checked"))
 			info["wall_S"]={}
 			info["wall_S"]["composition"] = south_ratio
 			info["wall_S"]["vertices"] = output[0]
 			info["wall_S"]["material"] = south_mat_names
 			info["wall_S"]["GWP"] = output[1] 
-			info["wall_S"]["halved"] = $("#intersect_S").val()
+			info["wall_S"]["halved"] = $("#intersect_S").prop("checked")
+			info["wall_S"]["entrance"] = $("#entrace_S").prop("checked")
 			gwpS = eval(output[1].join("+"))
 
-			output = compToVertices(wall_N_vertices,north_ratio,north_mat_gwp)
+			output = compToVertices(wall_N_vertices,north_ratio,north_mat_gwp, $("#intersect_N").prop("checked"))
 			info["wall_N"]={}
 			info["wall_N"]["composition"] = north_ratio
 			info["wall_N"]["vertices"] = output[0]
 			info["wall_N"]["material"] = north_mat_names
 			info["wall_N"]["GWP"] = output[1] 
-			info["wall_N"]["halved"] = $("#intersect_N").val()
+			info["wall_N"]["halved"] = $("#intersect_N").prop("checked")
+			info["wall_N"]["entrance"] = $("#entrace_N").prop("checked")
 			gwpN = eval(output[1].join("+"))
 
-			output = compToVertices(wall_E_vertices,east_ratio,east_mat_gwp)
+			output = compToVertices(wall_E_vertices,east_ratio,east_mat_gwp, $("#intersect_E").prop("checked"))
 			info["wall_E"]={}
 			info["wall_E"]["composition"] = east_ratio
 			info["wall_E"]["vertices"] = output[0]
 			info["wall_E"]["material"] = east_mat_names
 			info["wall_E"]["GWP"] = output[1] 
-			info["wall_E"]["halved"] = $("#intersect_E").val()
+			info["wall_E"]["halved"] = $("#intersect_E").prop("checked")
+			info["wall_E"]["entrance"] = $("#entrace_E").prop("checked")
 			gwpE = eval(output[1].join("+"))
 
-			output = compToVertices(wall_W_vertices,west_ratio,west_mat_gwp)
+			output = compToVertices(wall_W_vertices,west_ratio,west_mat_gwp, $("#intersect_W").prop("checked"))
 			info["wall_W"]={}
 			info["wall_W"]["composition"] = west_ratio
 			info["wall_W"]["vertices"] = output[0]
 			info["wall_W"]["material"] = west_mat_names
 			info["wall_W"]["GWP"] = output[1] 
-			info["wall_W"]["halved"] = $("#intersect_W").val()
+			info["wall_W"]["halved"] = $("#intersect_W").prop("checked")
+			info["wall_W"]["entrance"] = $("#entrace_W").prop("checked")
 			gwpW = eval(output[1].join("+"))
 
 			info["totalGWP"] = gwpS+gwpN+gwpE+gwpW
 
 			//alert("labelled: Node-" + String(info["id"])+"!" )
 
-			data.nodes[i] = info
+			data.nodes[data.nodes.indexOf(data.nodes.find(el=>el.id==selected_nodes[i]))] = info
 
 			//assigned_nodes.push(i)
 
@@ -379,11 +403,11 @@
 			}
 
 			info["floorMat"] = $("#floor_mat option:selected").text()
-			info["floorGWP"] = $(lcaData.GWParea[$("#floor_mat").val()])*info.floorArea
+			info["floorGWP"] = $(lcaData.GWParea[$("#floor_mat").val()])[0]*info.floorArea
 
 			$("#centext"+String(info["id"])).html(info["id"]+"-"+info["roomtype"])
 
-			d3.select("#cen"+String(info["id"])).attr("r",0.5);
+			d3.select("#cen"+String(info["id"])).attr("r",0.7);
 			d3.select("#line"+String(info["id"])+"-"+String(0)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
 			d3.select("#line"+String(info["id"])+"-"+String(1)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
 			d3.select("#line"+String(info["id"])+"-"+String(2)).style("stroke-width",0.1).style("stroke","#B4ABD6").raise()
@@ -391,7 +415,8 @@
 						
 		}
 		selected_nodes = []
-		$("#selected_nodes_list")[0].innerHTML = "None yett."
+		$("#selected_nodes_list")[0].innerHTML = "None yet."
+		alert("assigned!")
 
 	}
 
@@ -403,6 +428,7 @@
 			  contentType:"application/json; charset=utf-8",
 			  dataType:"json"
 			})
+			alert("sent!")
 		}
 
 
