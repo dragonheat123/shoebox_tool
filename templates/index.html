@@ -43,7 +43,7 @@
 			<div> Is this wall intersecting another? <input id="intersect_N" type="checkbox" value="True"> </div>
 			<div> Is this wall a door to the outside? <input id="entrance_N" type="checkbox" value="True"> </div>
   			<div id="composition_N_val" style="font-weight:bold;">Support: 25% Infill: 50% Openings: 25%</div></span>
-  			<div id="slider-range" class="composition_N" style="max-width:50%"></div><br>
+  			<div id="slider-range" class="composition_N" style="max-width:50%"></div>
   			<!--div><input type="composition_N_val_text" id="room_type"></div><br-->
 			<span>Support Material: <select id="support_N_mat" style="max-width:20%"></select></span><br>
 			<span>Infill Material:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <select id="infill_N_mat" style="max-width:20%"></select></span><br>
@@ -129,7 +129,10 @@
       max: 100,
       values: [ 25, 75 ],
       slide: function( event, ui ) {
-      var response = "Support: ".concat(String($( "#slider-range.composition_N" ).slider( "values", 0 )),"% ","Infill: " ,String($( "#slider-range.composition_N" ).slider( "values", 1 )-$( "#slider-range.composition_N").slider( "values", 0 )),"% ","Openings: ",String(100-$( "#slider-range.composition_N" ).slider( "values", 1 )),"%");
+      slideN1 =  $(this).slider( "values", 0 )
+      slideN2 = $(this).slider( "values", 1 )
+      console.log(slideN1)
+      var response = "Support: ".concat(String(slideN1),"% ","Infill: " ,String(slideN2-slideN1),"% ","Openings: ",String(100-slideN2),"%");
       	$("#composition_N_val").html(response);}});});
 	
 	$( function() {
@@ -271,12 +274,13 @@
 
 	function assign_data(){
 		for (i=0;i<selected_nodes.length;i++){
-			info = data.nodes.find(el=>el.id==selected_nodes[i])
-			info["roomtype"] = $("#room_type")[0].value
-			south_ratio = [$( "#slider-range.composition_S" ).slider( "values", 0 )/100,$( "#slider-range.composition_S" ).slider( "values", 1 )/100-$( "#slider-range.composition_S" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_S" ).slider( "values", 1 )/100]
-			east_ratio = [$( "#slider-range.composition_E" ).slider( "values", 0 )/100,$( "#slider-range.composition_E" ).slider( "values", 1 )/100-$( "#slider-range.composition_E" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_E" ).slider( "values", 1 )/100]
-			north_ratio = [$( "#slider-range.composition_N" ).slider( "values", 0 )/100,$( "#slider-range.composition_N" ).slider( "values", 1 )/100-$( "#slider-range.composition_N" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_N" ).slider( "values", 1 )/100]
-			west_ratio = [$( "#slider-range.composition_W" ).slider( "values", 0 )/100,$( "#slider-range.composition_W" ).slider( "values", 1 )/100-$( "#slider-range.composition_W" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_W" ).slider( "values", 1 )/100]
+			info = data.nodes.find(el=>el.id==selected_nodes[i]);
+			console.log(info["roomtype"]);}}
+			info["roomtype"] = $("#room_type")[0].value;
+			south_ratio = [$( "#slider-range.composition_S" ).slider( "values", 0 )/100,$( "#slider-range.composition_S" ).slider( "values", 1 )/100-$( "#slider-range.composition_S" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_S" ).slider( "values", 1 )/100];
+			east_ratio = [$( "#slider-range.composition_E" ).slider( "values", 0 )/100,$( "#slider-range.composition_E" ).slider( "values", 1 )/100-$( "#slider-range.composition_E" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_E" ).slider( "values", 1 )/100];
+			north_ratio = [$( "#slider-range.composition_N" ).slider( "values", 0 )/100,$( "#slider-range.composition_N" ).slider( "values", 1 )/100-$( "#slider-range.composition_N" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_N" ).slider( "values", 1 )/100];
+			west_ratio = [$( "#slider-range.composition_W" ).slider( "values", 0 )/100,$( "#slider-range.composition_W" ).slider( "values", 1 )/100-$( "#slider-range.composition_W" ).slider( "values", 0 )/100, 1-$( "#slider-range.composition_W" ).slider( "values", 1 )/100];
 
 			north_mat_names = [$("#support_N_mat option:selected").text(),$("#infill_N_mat option:selected").text(),$("#openings_N_mat option:selected").text()]
 			south_mat_names = [$("#support_S_mat option:selected").text(),$("#infill_S_mat option:selected").text(),$("#openings_S_mat option:selected").text()]

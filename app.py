@@ -4,6 +4,7 @@ import json
 import os
 import numpy as np
 import pandas as pd
+
 rootPath = os.path.dirname(__file__)
 lcaDbPath = os.path.join(rootPath, 'LCA','testcase_db2.csv')
 lcaD = pd.read_csv(lcaDbPath)
@@ -39,11 +40,11 @@ def get_output():
 	global out
 	out = request.get_json(force=True)
 	print("submitted")
-	return out
+	return "ok"
 
 @app.route('/get/',methods=['GET'])
 def output():
-	return out
+	return json.dumps(out)
 
 
 
