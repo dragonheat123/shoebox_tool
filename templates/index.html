@@ -190,7 +190,7 @@
     
     function addLine(x1,y1,x2,y2,svg,i,j,selected_line){
 	svg.append("line")
-	.style("stroke", "lightgreen")
+	.style("stroke", "#85E2B5")
 	.style("stroke-width", 0.1)
 	.attr("x1", x1)
 	.attr("y1", y1)
@@ -231,6 +231,17 @@
 	.attr("id", 'int'+String(i))
 	.on("click", function(){console.log("clicked");d3.select("#int"+String(i)).style("stroke-width",1)});
 	};
+
+	function addSeg(x1,y1,x2,y2,svg,i,c){
+     svg.append("line")
+	.style("stroke", c(i))
+	.style("stroke-width", 0.1)
+	.attr("x1", x1)
+	.attr("y1", y1)
+	.attr("x2", x2)
+	.attr("y2", y2)
+	.attr("id", 'int'+String(i))
+	}
 
 	function addNodeControl(id){
 		if (selected_nodes.includes(id) == false){
