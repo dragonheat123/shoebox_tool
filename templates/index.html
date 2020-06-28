@@ -365,8 +365,8 @@
 			info["wall_S"]["vertices"] = output[0]
 			info["wall_S"]["material"] = south_mat_names
 			info["wall_S"]["GWP"] = output[1] 
-			info["wall_S"]["halved"] = $("#intersect_S").prop("checked")
-			info["wall_S"]["entrance"] = $("#entrace_S").prop("checked")
+			info["wall_S"]["halved"] = String($("#intersect_S").prop("checked"))
+			info["wall_S"]["entrance"] = String($("#entrace_S").prop("checked"))
 			gwpS = eval(output[1].join("+"))
 
 			output = compToVertices(wall_N_vertices,north_ratio,north_mat_gwp, $("#intersect_N").prop("checked"))
@@ -375,8 +375,8 @@
 			info["wall_N"]["vertices"] = output[0]
 			info["wall_N"]["material"] = north_mat_names
 			info["wall_N"]["GWP"] = output[1] 
-			info["wall_N"]["halved"] = $("#intersect_N").prop("checked")
-			info["wall_N"]["entrance"] = $("#entrace_N").prop("checked")
+			info["wall_N"]["halved"] = String($("#intersect_N").prop("checked"))
+			info["wall_N"]["entrance"] = String($("#entrace_N").prop("checked"))
 			gwpN = eval(output[1].join("+"))
 
 			output = compToVertices(wall_E_vertices,east_ratio,east_mat_gwp, $("#intersect_E").prop("checked"))
@@ -385,8 +385,8 @@
 			info["wall_E"]["vertices"] = output[0]
 			info["wall_E"]["material"] = east_mat_names
 			info["wall_E"]["GWP"] = output[1] 
-			info["wall_E"]["halved"] = $("#intersect_E").prop("checked")
-			info["wall_E"]["entrance"] = $("#entrace_E").prop("checked")
+			info["wall_E"]["halved"] = String($("#intersect_E").prop("checked"))
+			info["wall_E"]["entrance"] = String($("#entrace_E").prop("checked"))
 			gwpE = eval(output[1].join("+"))
 
 			output = compToVertices(wall_W_vertices,west_ratio,west_mat_gwp, $("#intersect_W").prop("checked"))
@@ -395,8 +395,8 @@
 			info["wall_W"]["vertices"] = output[0]
 			info["wall_W"]["material"] = west_mat_names
 			info["wall_W"]["GWP"] = output[1] 
-			info["wall_W"]["halved"] = $("#intersect_W").prop("checked")
-			info["wall_W"]["entrance"] = $("#entrace_W").prop("checked")
+			info["wall_W"]["halved"] = String($("#intersect_W").prop("checked"))
+			info["wall_W"]["entrance"] = String($("#entrace_W").prop("checked"))
 			gwpW = eval(output[1].join("+"))
 
 			info["totalGWP"] = gwpS+gwpN+gwpE+gwpW
