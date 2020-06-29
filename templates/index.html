@@ -523,8 +523,10 @@
 			n1["roomType"]=data.nodes[k]["roomtype"]
 			n1["floorArea"]= data.nodes[k]["floorArea"]
 			n1["floorMatId"] = "CP032"
-			n1["innerWalls"] = data.nodes[k]["center"]
+			n1["innerWalls"] = []
+			n1["center"] = data.nodes[k]["center"]
 			node_file.push(n1)
+
 
 		}
 			$.ajax({
