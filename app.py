@@ -17,6 +17,7 @@ floor_plan = '{"int": [[[-15.257157712634401, 4.7831980959440106, 0.0], [-15.257
 
 out = "nothing"
 #floor = None
+parcel_req = "nothing"
 
 # app
 app = Flask(__name__)
@@ -47,10 +48,18 @@ def output():
 	print("queried")
 	return json.dumps(out)
 
-@app.route('/parcel/',methods=['GET'])
+@app.route('/parcel/',methods=['POST'])
 def parcel():
-	print("redirected")
-	return render_template('parcel.html',parcel=out,lcaData = lcaD)
+	print("parcellation_output")
+	global parcel_req
+	parcel_req = request.get_json(force=True)
+	return "ok"
+
+@app.route('/parcel/',methods=['GET'])
+def parcel_out():
+	print("parc_queried")
+	return json.dumps(parcel_req)
+
 
 
 

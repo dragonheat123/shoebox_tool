@@ -78,7 +78,7 @@
 			<p></p>
 			<p><button id="assign_data" type="button" onclick="assign_data();alert('assigned!')" style="display: block;">Assign Changes</button></p>
 			<P><button id="send_data" type="button" onclick="send_data();alert('sent!')" style="display: block;">Send to Grasshopper...</button></P>
-
+			<P><button id="parcel_data" type="button" onclick="parcel_data();alert('parcel created at /parcel/!')" style="display: block;">Create Parcel Data</button></P>
 
 		</div>
 
@@ -99,6 +99,7 @@
 
 	// var centroid = JSON.parse(document.getElementsByClassName("floor_plan")[0].innerHTML).centroid
 	var intc = data.int
+	var edges = data.edges
 	//var control = document.getElementsByClassName("control")[0]
 	var selected_nodes = []
 	var assigned_nodes = []
@@ -230,13 +231,13 @@
 	function addInt(x1,y1,x2,y2,svg,i,c){
 	svg.append("line")
 	.style("stroke", c(i))
-	.style("stroke-width", 0.1)
+	.style("stroke-width", 0.15)
 	.attr("x1", x1)
 	.attr("y1", y1)
 	.attr("x2", x2)
 	.attr("y2", y2)
 	.attr("id", 'int'+String(i))
-	.on("click", function(){console.log("clicked");d3.select("#int"+String(i)).style("stroke-width",1)});
+	// .on("click", function(){console.log("clicked");d3.select("#int"+String(i)).style("stroke-width",1)});
 	};
 
 	function addSeg(x1,y1,x2,y2,svg,i,c){
@@ -287,9 +288,9 @@
 			addLine(centroid[i].walls[j][0],-centroid[i].walls[j][1],centroid[i].walls[j+1][0],-centroid[i].walls[j+1][1],svg,centroid[i].id,j)
 		};};
 
-	//for (k=0; k<intc.length; k++){
-	//	addInt(intc[k][0][0],-intc[k][0][1],intc[k][1][0],-intc[k][1][1],svg,k,color)
-	//}
+	for (k=0; k<intc.length; k++){
+	 	addInt(intc[k][0][0],-intc[k][0][1],intc[k][1][0],-intc[k][1][1],svg,k,color)
+	 }
 
 	function assign_data(){
 		for (i=0;i<selected_nodes.length;i++){
@@ -322,40 +323,103 @@
 			wall_N_vertices = [info.walls[2],info.walls[3]]
 			wall_W_vertices = [info.walls[3],info.walls[4]]
 
+			function distance (x1,y1,x2,y2,a1,b1){
+				return Math.sqrt(Math.pow(a1-x1,2)+Math.pow(b1-y1,2))+Math.sqrt(Math.pow(x2-a1,2)+Math.pow(y2-b1,2))-Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2))
+			}
+
+			for (k =0;k<edges.length;k++){
+				if (edges[k].edgeId.split("/").includes(String(selected_nodes[i]))){
+					console.log(edges[k].edgeId.split("/"),String(selected_nodes[i]))
+					selected_edge = intc[k]
+					
+					edge_2_x = intc[k][1][0]
+					edge_2_y =  intc[k][1][1]
+
+					edge_1_x = intc[k][0][0]
+					edge_1_y = intc[k][0][1]
+
+
+					wall_S2_dx = wall_S_vertices[1][0]
+					wall_S2_dy = wall_S_vertices[1][1]
+					wall_S1_dx = wall_S_vertices[0][0]
+					wall_S1_dy = wall_S_vertices[0][1]
+
+					test1 = distance(wall_S1_dx,wall_S1_dy,wall_S2_dx,wall_S2_dy,edge_1_x,edge_1_y)
+					test2 = distance(wall_S1_dx,wall_S1_dy,wall_S2_dx,wall_S2_dy,edge_2_x,edge_2_y)
+					console.log(test1,test2)
+
+					if (test1<0.01 && test2<0.01 && south_ratio[0] ==1){
+						edges[k]["isAccessible"] = false
+					}
+
+					wall_N2_dx = wall_N_vertices[1][0]
+					wall_N2_dy = wall_N_vertices[1][1]
+					wall_N1_dx = wall_N_vertices[0][0]
+					wall_N1_dy = wall_N_vertices[0][1]
+
+					test1 = distance(wall_N1_dx,wall_N1_dy,wall_N2_dx,wall_N2_dy,edge_1_x,edge_1_y)
+					test2 = distance(wall_N1_dx,wall_N1_dy,wall_N2_dx,wall_N2_dy,edge_2_x,edge_2_y)
+					console.log(test1,test2)
+
+					if (test1<0.01 && test2<0.01 && north_ratio[0] ==1){
+						edges[k]["isAccessible"] = false
+					}
+
+					wall_E2_dx = wall_E_vertices[1][0]
+					wall_E2_dy = wall_E_vertices[1][1]
+					wall_E1_dx = wall_E_vertices[0][0]
+					wall_E1_dy = wall_E_vertices[0][1]
+
+					test1 = distance(wall_E1_dx,wall_E1_dy,wall_E2_dx,wall_E2_dy,edge_1_x,edge_1_y)
+					test2 = distance(wall_E1_dx,wall_E1_dy,wall_E2_dx,wall_E2_dy,edge_2_x,edge_2_y)
+					console.log(test1,test2)
+
+					if (test1<0.01 && test2<0.01 && east_ratio[0] ==1){
+						edges[k]["isAccessible"] = false
+					}
+
+					wall_W2_dx = wall_W_vertices[1][0]
+					wall_W2_dy = wall_W_vertices[1][1]
+					wall_W1_dx = wall_W_vertices[0][0]
+					wall_W1_dy = wall_W_vertices[0][1]
+
+					test1 = distance(wall_W1_dx,wall_W1_dy,wall_W2_dx,wall_W2_dy,edge_1_x,edge_1_y)
+					test2 = distance(wall_W1_dx,wall_W1_dy,wall_W2_dx,wall_W2_dy,edge_2_x,edge_2_y)
+					console.log(test1,test2)
+
+					if (test1<0.01 && test2<0.01 && west_ratio[0] ==1){
+						edges[k]["isAccessible"] = false
+					}
+					
+				
+				} 
+			}
+
 
 			
 			function compToVertices (v,ratio,gwp_val,checked){
 				ver_sep = []
-				if (v[0][0] == v[1][0]){ //check for vertical wall
-					dif_y = v[1][1] - v[0][1]
-					sup = ratio[0]
-					inf = ratio[1]
-					off = ratio[2]
-					wall_s = [[v[0][0],v[0][1],0],[v[1][0],v[0][1]+sup*dif_y,0]]
-					wall_i = [[v[0][0],v[0][1]+sup*dif_y,0],[v[1][0],v[0][1]+(sup+inf)*dif_y,0]]
-					wall_o = [[v[0][0],v[0][1]+(sup+inf)*dif_y,0],[v[1][0],v[1][1],0]]
-					ver_sep = [wall_s,wall_i,wall_o]
-					if (checked==true){
-						gwp_sep = [Math.abs(sup*dif_y)/2*gwp_val[0],Math.abs(inf*dif_y)/2*gwp_val[1],Math.abs(off*dif_y)/2*gwp_val[2]]}
-					else{
-						gwp_sep = [Math.abs(sup*dif_y)*gwp_val[0],Math.abs(inf*dif_y)*gwp_val[1],Math.abs(off*dif_y)*gwp_val[2]]}
-					return [ver_sep,gwp_sep]
-				};
-				if (v[0][1] == v[1][1]){ //check for horizontal wall
-					dif_x = v[1][0] - v[0][0]
-					sup = ratio[0]
-					inf = ratio[1]
-					off = ratio[2]
-					wall_s = [[v[0][0],v[0][1],0],[v[0][0]+sup*dif_x,v[1][1],0]]
-					wall_i = [[v[0][0]+sup*dif_x,v[0][1],0],[v[0][0]+(sup+inf)*dif_x,v[1][1],0]]
-					wall_o = [[v[0][0]+(sup+inf)*dif_x,v[0][1],0],[v[1][0],v[1][1],0]]
-					ver_sep = [wall_s,wall_i,wall_o]
-					if (checked == true){
-						gwp_sep = [Math.abs(sup*dif_x)/2*gwp_val[0],Math.abs(inf*dif_x)/2*gwp_val[1],Math.abs(off*dif_x)/2*gwp_val[2]]}
-					else{
-						gwp_sep = [Math.abs(sup*dif_x)*gwp_val[0],Math.abs(inf*dif_x)*gwp_val[1],Math.abs(off*dif_x)*gwp_val[2]]}
-					return [ver_sep,gwp_sep]
+				dif_y = v[1][1] - v[0][1]
+				dif_x = v[1][0] - v[0][0]
+
+				sup = ratio[0]
+				inf = ratio[1]
+				off = ratio[2]
+
+				wall_s = [[v[0][0],v[0][1],0],[v[0][0]+sup*dif_x,v[0][1]+sup*dif_y,0]]
+				wall_i = [[v[0][0]+sup*dif_x,v[0][1]+sup*dif_y,0],[v[0][0]+(sup+inf)*dif_x,v[0][1]+(sup+inf)*dif_y,0]]
+				wall_o = [[v[0][0]+(sup+inf)*dif_x,v[0][1]+(sup+inf)*dif_y,0],[v[1][0],v[1][1],0]]
+				wall_s_norm = Math.sqrt(Math.pow(sup*dif_x,2)+Math.pow(sup*dif_y,2))
+				wall_i_norm = Math.sqrt(Math.pow(inf*dif_x,2)+Math.pow(inf*dif_y,2))
+				wall_o_norm = Math.sqrt(Math.pow(off*dif_x,2)+Math.pow(off*dif_y,2))
+				ver_sep = [wall_s,wall_i,wall_o]
+
+				if (checked==true){
+					gwp_sep = [wall_s_norm*gwp_val[0]/2,wall_i_norm*gwp_val[1]/2,wall_o_norm*gwp_val[2]/2]
+				}else{
+					gwp_sep = [wall_s_norm*gwp_val[0],wall_i_norm*gwp_val[1],wall_o_norm*gwp_val[2]]
 				}
+				return [ver_sep,gwp_sep]
 
 			}
 
@@ -366,7 +430,7 @@
 			info["wall_S"]["material"] = south_mat_names
 			info["wall_S"]["GWP"] = output[1] 
 			info["wall_S"]["halved"] = String($("#intersect_S").prop("checked"))
-			info["wall_S"]["entrance"] = String($("#entrace_S").prop("checked"))
+			info["wall_S"]["entrance"] = String($("#entrance_S").prop("checked"))
 			gwpS = eval(output[1].join("+"))
 
 			output = compToVertices(wall_N_vertices,north_ratio,north_mat_gwp, $("#intersect_N").prop("checked"))
@@ -376,7 +440,7 @@
 			info["wall_N"]["material"] = north_mat_names
 			info["wall_N"]["GWP"] = output[1] 
 			info["wall_N"]["halved"] = String($("#intersect_N").prop("checked"))
-			info["wall_N"]["entrance"] = String($("#entrace_N").prop("checked"))
+			info["wall_N"]["entrance"] = String($("#entrance_N").prop("checked"))
 			gwpN = eval(output[1].join("+"))
 
 			output = compToVertices(wall_E_vertices,east_ratio,east_mat_gwp, $("#intersect_E").prop("checked"))
@@ -386,7 +450,7 @@
 			info["wall_E"]["material"] = east_mat_names
 			info["wall_E"]["GWP"] = output[1] 
 			info["wall_E"]["halved"] = String($("#intersect_E").prop("checked"))
-			info["wall_E"]["entrance"] = String($("#entrace_E").prop("checked"))
+			info["wall_E"]["entrance"] = String($("#entrance_E").prop("checked"))
 			gwpE = eval(output[1].join("+"))
 
 			output = compToVertices(wall_W_vertices,west_ratio,west_mat_gwp, $("#intersect_W").prop("checked"))
@@ -396,11 +460,16 @@
 			info["wall_W"]["material"] = west_mat_names
 			info["wall_W"]["GWP"] = output[1] 
 			info["wall_W"]["halved"] = String($("#intersect_W").prop("checked"))
-			info["wall_W"]["entrance"] = String($("#entrace_W").prop("checked"))
+			info["wall_W"]["entrance"] = String($("#entrance_W").prop("checked"))
 			gwpW = eval(output[1].join("+"))
 
 			info["totalGWP"] = gwpS+gwpN+gwpE+gwpW
 			info["breakdownGWP"] = {}
+
+			if (info["wall_S"]["entrance"]=="true" ||info["wall_E"]["entrance"]=="true"||info["wall_W"]["entrance"]=="true" || info["wall_N"]["entrance"]=="true"){
+				ent_edge = {"edgeId":"1/"+String(selected_nodes[i]),"isAccessible":true,"adjWalls":[]}
+				edges.push(ent_edge)
+			}
 
 
 			//alert("labelled: Node-" + String(info["id"])+"!" )
@@ -444,6 +513,31 @@
 			})
 		}
 
+	function parcel_data(){
+		node_file = [{"id":"0","roomType":"outside","floorArea":0,"floorMatId":"CP032","innerWalls":[]},
+					{"id":"1","roomType":"service","floorArea":0,"floorMatId":"CP032","innerWalls":[]}]
+		
+		for (k=0; k<data.nodes.length; k++){
+			n1={}
+			n1["id"] = data.nodes[k]["id"]
+			n1["roomType"]=data.nodes[k]["roomtype"]
+			n1["floorArea"]= data.nodes[k]["floorArea"]
+			n1["floorMatId"] = "CP032"
+			n1["innerWalls"] = data.nodes[k]["center"]
+			node_file.push(n1)
+
+		}
+			$.ajax({
+			  url:"/parcel/",
+			  type:"POST",
+			  data:JSON.stringify([node_file,edges]),
+			  contentType:"application/json; charset=utf-8",
+			  dataType:"json",
+			  complete: function() {
+			  	console.log("complete");
+			  }
+			})
+		}
 
 
 	
