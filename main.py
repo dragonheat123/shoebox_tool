@@ -84,8 +84,12 @@ def parcelateBuilding(nodesJson,edgesJson,floorCount,demandProjection,unitTypes)
         result[year] = b.getResultBuilding()
     return json.dumps(result)
 
+nodesJson = json.dumps(inputs[0])
 
-output = parcelateBuilding(json.dumps(inputs[0]), json.dumps(inputs[1]), 10, demandProjection, unitTypes)
+edgesJson = json.dumps(inputs[1])
+
+
+output = parcelateBuilding(nodesJson,edgesJson, 10, demandProjection, unitTypes)
 
     
 # if __name__== "__main__":
