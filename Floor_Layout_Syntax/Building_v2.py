@@ -68,6 +68,9 @@ class Building:
     def getBuildingLayoutResults(self):
         result = dict()
         result['layouts'] = list()
+        result['buildingDist'] = self.getBestBuildingDist()
+        result['demandDist'] = self.demographicModel
+        result['dissatisfaction'] = self.getBestFitness()['diff']
         idx = 0
         for floorIndex in sorted(self.parcelizedBuilding.keys()):
             #print("--floor "+str(floorIndex)+" parcelation--")
@@ -161,6 +164,11 @@ class Building:
     def drawComparisonChart(self):
         for fR,population in self.layoutPopulation.items():
             population.printBestResults(self.layoutGraph.unitCombinations,self.demographicModel[fR],drawComparisonChart)
+    
+    
+    def getBestBuildingDist(self):
+        for fR,population in self.layoutPopulation.items():
+            return population.bestResults[0].v
     
     def getBestFitness(self):
         for fR,population in self.layoutPopulation.items():
