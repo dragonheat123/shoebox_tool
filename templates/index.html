@@ -34,7 +34,12 @@
 			<p>Selected Node(s)</p><br>
 			<div id="selected_nodes_list" style="word-wrap: break-word;">None yet...</div><br>
 			<span style="font-weight:bold;">Room Type:</span><br>
-			<p><input type="text" id="room_type"></p><br>
+			<p><select style="max-width:20%" id="room_type">
+			  <option value="normal">Normal</option>
+			  <option value="toilet">Toilet</option>
+			  <option value="storage">Storage</option>
+			  <option value="cor">Corridor</option>
+			</select></p><br>
 
 			<span style="font-weight:bold;">Floor Slab</span><br>
 			<p>Material: <select id="floor_mat" style="max-width:20%"></select></p><br>
@@ -346,7 +351,7 @@
 
 					test1 = distance(wall_S1_dx,wall_S1_dy,wall_S2_dx,wall_S2_dy,edge_1_x,edge_1_y)
 					test2 = distance(wall_S1_dx,wall_S1_dy,wall_S2_dx,wall_S2_dy,edge_2_x,edge_2_y)
-					console.log(test1,test2)
+					// console.log(test1,test2)
 
 					if (test1<0.01 && test2<0.01 && south_ratio[0] ==1){
 						edges[k]["isAccessible"] = false
@@ -359,7 +364,7 @@
 
 					test1 = distance(wall_N1_dx,wall_N1_dy,wall_N2_dx,wall_N2_dy,edge_1_x,edge_1_y)
 					test2 = distance(wall_N1_dx,wall_N1_dy,wall_N2_dx,wall_N2_dy,edge_2_x,edge_2_y)
-					console.log(test1,test2)
+					// console.log(test1,test2)
 
 					if (test1<0.01 && test2<0.01 && north_ratio[0] ==1){
 						edges[k]["isAccessible"] = false
@@ -372,7 +377,7 @@
 
 					test1 = distance(wall_E1_dx,wall_E1_dy,wall_E2_dx,wall_E2_dy,edge_1_x,edge_1_y)
 					test2 = distance(wall_E1_dx,wall_E1_dy,wall_E2_dx,wall_E2_dy,edge_2_x,edge_2_y)
-					console.log(test1,test2)
+					// console.log(test1,test2)
 
 					if (test1<0.01 && test2<0.01 && east_ratio[0] ==1){
 						edges[k]["isAccessible"] = false
@@ -385,7 +390,7 @@
 
 					test1 = distance(wall_W1_dx,wall_W1_dy,wall_W2_dx,wall_W2_dy,edge_1_x,edge_1_y)
 					test2 = distance(wall_W1_dx,wall_W1_dy,wall_W2_dx,wall_W2_dy,edge_2_x,edge_2_y)
-					console.log(test1,test2)
+					// console.log(test1,test2)
 
 					if (test1<0.01 && test2<0.01 && west_ratio[0] ==1){
 						edges[k]["isAccessible"] = false
