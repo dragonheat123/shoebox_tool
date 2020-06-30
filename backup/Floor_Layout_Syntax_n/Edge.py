@@ -22,28 +22,14 @@ class Edge:
     
     #TODO: currently wall states are wholly toggled by wallType 
     #-if further definition required, consider unique wall selector or add new wallType
-    
-    #if none specified remain same
-    def getGwpCost(self,wallType,lcaDb,materialId=None,thickness=None):
-        sumGWP=0
-        if wallType in self.adjWalls:
-            for w in self.adjWalls[wallType]:
-                if materialId!=None:
-                    w.materialID = materialId
-                if thickness!=None:
-                    w.thickness=thickness
-                sumGWP+=w.getGwp(lcaDb,w.materialID)
-        return sumGWP
-#
-#    def getGwpCost(self,wallType):
-#        sumGWP=0
-#        if wallType in self.adjWalls:
-#            for w in self.adjWalls[wallType]:
-#                sumGWP+=w.GWP
-#        return sumGWP
 
-    def getGWP(self):
+    def getGwpCost(self,wallType=None):
         sumGWP=0
-        for w in self.adjWalls:
-            sumGWP+=w.GWP
+        if wallType!=None:
+            if wallType in self.adjWalls:
+                for w in self.adjWalls[wallType]:
+                    sumGWP+=w.GWP
+        else:
+            for w in self.adjWalls:
+                sumGWP+=w.GWP
         return sumGWP

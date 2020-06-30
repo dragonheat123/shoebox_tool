@@ -23,16 +23,10 @@ def KL(P,Q):
     checking that neither P nor Q is equal to 0. """
     #epsilon = 0.00001
     # You may want to instead make copies to avoid changing the np arrays.
-    building = P#+epsilon
-    demand = Q#+epsilon
-#    divergence = np.sum(np.abs(A-B))/2
-    divergence = demand-building
-    r=0
-    for d in divergence:
-        if d>0:
-            r+=d     
-    # r = np.sum(Q*np.abs(building-demand))
-    return r
+    A = P#+epsilon
+    B = Q#+epsilon
+    divergence = np.sum(Q*np.abs(A-B))
+    return divergence
 
 #In our use case, 
 #--dnaLength corresponds to number of floors being matched to a distribution
@@ -42,7 +36,7 @@ def KL(P,Q):
 #-->max(1-magnitude(normalized(v)-targetDistribution))
     
 class Population:
-    def __init__(self, targetDist, dnaLength, mutationRate, genePool, popCount, roomCount):
+    def __init__(self, targetDist, dnaLength, mutationRate, genePool, popCount):
         self.population = []
         self.matingPool = []
         self.generation = 0
@@ -53,7 +47,7 @@ class Population:
         self.bestResults = []
         self.fitnessSum=0
         for i in range(popCount):
-            self.population.append(DNA(dnaLength, genePool, roomCount))
+            self.population.append(DNA(dnaLength, genePool))
         self.calcFitness()
     
     #calculates fitness for each member in population
@@ -78,7 +72,7 @@ class Population:
         for dna in self.population:
             p.append(dna.fitness)
         #print(p)
-        while len(self.matingPool)<Constants.GA_MATING_POOL_COUNT:
+        while len(self.matingPool)<100:
             fit_idx = p.index(max(p))
             #print("max index:",fit_idx,p)
             self.matingPool.append(self.population[fit_idx])
@@ -121,15 +115,10 @@ class Population:
             self.bestResults.extend(worldFittests)
             self.bestResults = getLeastSpaceAndFilterOutDups(self.bestResults)
             self.bestFitness = worldRecord
-        print('gen '+str(self.generation)+' record holder: '+str(worldFittests[0].genes)+' kl: '+str(worldFittests[0].kl)+' wss: '+str(worldFittests[0].whiteSpaceScore)+' fitness: '+str(worldFittests[0].fitness))
+        print('gen '+str(self.generation)+' record holder: '+str(worldFittests[0].genes)+' fitness: '+str(worldFittests[0].fitness))
         
-    def getBestFitness(self):
-        return {'fitness':self.bestFitness,'diff':self.bestResults[0].kl,'whitespace':self.bestResults[0].whiteSpaceScore}
-    
     def printBestResults(self,unitCombinations,oriDist,drawComparisonChart):
         print('---Best records---\n'+'fitness: '+str(self.bestFitness))
-        print('whitespace ratio: ',self.bestResults[0].whiteSpaceScore)
-        print('diff: ',self.bestResults[0].kl)
         drawComparisonChart(oriDist, self.bestResults[0].v, "Comparison Distribution for DNA "+str(self.bestResults[0].genes))
 #        for dna in self.bestResults:
 #            drawComparisonChart(oriDist, dna.v, "Comparison Distribution for DNA "+str(dna.genes))
@@ -139,19 +128,15 @@ class Population:
 
 
 class DNA:
-    def __init__(self, length, genePool,roomCount):
+    def __init__(self, length, genePool):
         self.genes = []
         self.length = length
         self.genePool=genePool
         self.genePoolKeys = list(genePool.keys())   #changed to randomize index for dictionary
-        self.roomCount=roomCount
         self.v=[0]*len(Constants.UNIT_TYPES)   #normalized distribution of unit type counts [type0,type1,type2,type3,type4]
         self.fitness = float('-inf')
         self.emptySpace = 0
         self.hash = 0
-        self.whiteSpaceScore = 0
-        self.roomCount = roomCount
-        self.kl = 0
         for i in range(length):
 #            self.genes.append(random.randrange(len(genePool)))
             self.genes.append(random.choice(list(self.genePoolKeys)))
@@ -168,12 +153,7 @@ class DNA:
         self.v = self.v/(np.sum(self.v, axis=0))
         
         #KL divergence
-        self.kl = KL(self.v,targetDist)
-        self.whiteSpaceScore = self.emptySpace/(self.roomCount*len(self.genes))
-        if self.whiteSpaceScore>0.1:
-            self.fitness = -self.kl-self.whiteSpaceScore
-        else:
-            self.fitness = (1-self.kl)-0.2*self.whiteSpaceScore
+        self.fitness = -KL(self.v,targetDist)
         
         #find magnitude of difference between vector and target distribution
 #        v=np.subtract(v, targetDist)
@@ -182,7 +162,7 @@ class DNA:
 #        print('fitness: '+str(self.fitness))
         
     def crossover(self,partner):
-        child = DNA(self.length,self.genePool,self.roomCount)
+        child = DNA(self.length,self.genePool)
         midPoint = int(len(self.genes)/2) #random.randrange(len(self.genes))
         for i in range(len(self.genes)):
             if i > midPoint:

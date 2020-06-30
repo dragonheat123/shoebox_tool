@@ -3,8 +3,7 @@ class Node:
     def __init__(self, id=None, roomtype="room", floorArea=None, floorMaterialID=None, isEntrance=False):
         self.id=id
         self.roomtype=roomtype
-#        print(id,floorArea)
-        self.floorArea=float(floorArea) if (floorArea!="" and floorArea!=None) else 0
+        self.floorArea=float(floorArea) if floorArea!="" else 0
 #        self.lcaDb=lcaDb   #bottleneck given how python handles object refereces
         self.floorMaterialID=floorMaterialID
         self.innerWalls= []

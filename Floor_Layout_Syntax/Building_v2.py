@@ -6,7 +6,6 @@ import numpy as np
 from datetime import datetime
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-import seaborn.apionly as sns
 from matplotlib.colors import LinearSegmentedColormap
 from pandas import DataFrame as df
 import jsonpickle
@@ -21,6 +20,7 @@ class Building:
         self.layoutPopulation={}
         self.layoutGraph=layoutGraph
         self.demographicModel={}
+        self.prob_reconfig=None
         
         #===============================================PHASE 1==============================================
         #--evaluative phase to find out all possible unit combinations for a layout
@@ -30,10 +30,10 @@ class Building:
     def setDefaultState(self):
         for f in range(1,31):
             self.parcelizedBuilding[f] = self.layoutGraph.getDefaultLayout()
-    
+            
     def parcelate(self, demographicModel):
         start = datetime.now()
-            
+        
         #===============================================PHASE 2==============================================
         #--Selection and layout generation component; GA selects unit combination and traveral allocates units
         #====================================================================================================
@@ -42,13 +42,13 @@ class Building:
         #--foreach floor range, select unitCombination in floors then generate layout in each
         for fR in self.demographicModel.keys():
             floorBound = list(map(int, fR.split('-',1)))  #[0]->lower floor bound; [1]->upper floor bound
-            floorCount = floorBound[1]-floorBound[0]+1
+            floorCount = floorBound[1]-floorBound[0]+1  # TODO: static floorcount definition
             #--GA component to get try get best floor combinations
-            population = GA.Population(self.demographicModel[fR], floorCount, Constants.GA_MUTATION_RATE, self.layoutGraph.unitCombinations, Constants.GA_POPCOUNT)
+            population = GA.Population(self.demographicModel[fR], floorCount, Constants.GA_MUTATION_RATE, self.layoutGraph.unitCombinations, Constants.GA_POPCOUNT, len(self.layoutGraph.nodes))
             for i in range(Constants.GA_GENERATIONS):
+                population.calcFitness()
                 population.naturalSelection()
                 population.generate()
-                population.calcFitness()
                 population.evaluate()
                 
             #drawOverallDistributionChart(overallProb[fR],"Distribution for floors "+fR)
@@ -64,7 +64,20 @@ class Building:
         print(start)
         print('End Time: ')
         print(datetime.now())
-
+    
+    def getBuildingLayoutResults(self):
+        result = dict()
+        result['layouts'] = list()
+        idx = 0
+        for floorIndex in sorted(self.parcelizedBuilding.keys()):
+            #print("--floor "+str(floorIndex)+" parcelation--")
+            layouts = dict()
+            layouts['units'] = self.parcelizedBuilding[floorIndex].exportUnitData()
+            result['layouts'].append(layouts)
+            #print(json.dumps(result['layouts'][idx]))
+            idx += 1
+        return result
+    
     def getTotalGwp(self,floor=None,wallType='infill'):
         gwp=0
         #TOOO: a more elegant solution
@@ -79,8 +92,8 @@ class Building:
             gwp+=self.parcelizedBuilding[floor].getTotalGwpOfWallType(wallType)
         return gwp
     
-    def getStructuralGwp(self, forAllFloors=True):
-        gwp = self.layoutGraph.getStructuralGwp()
+    def getStructuralGwp(self, lcaDb, materialId=None,wallThickness=None,forAllFloors=True):
+        gwp = self.layoutGraph.getStructuralGwp(lcaDb,materialId,wallThickness)
         if forAllFloors==True:
             gwp*=len(self.parcelizedBuilding)
         return gwp
@@ -88,23 +101,23 @@ class Building:
     def getInfillGWP(self,otherBuilding):
         return self.compareBuildingWallChanges(otherBuilding)['added']['cost']
     
-    def compareBuildingWallChanges(self,other,wallType='infill'):
+    def compareBuildingWallChanges(self,other,lcaDb,materialId=None,wallThickness=None,wallType='infill'):
         res={
                 'added':{'qty':0,'cost':0},
                 'removed':{'qty':0,'cost':0},
                 'saved':{'qty':0,'cost':0}
                 }
         for floor in self.parcelizedBuilding.keys():
-            d=self.compareFloorWallChanges(other,floor,wallType)
+            d=self.compareFloorWallChanges(other,floor,lcaDb,materialId,wallThickness,wallType)
             for key in res.keys():
                 res[key]['qty']+=d[key]['qty']
                 res[key]['cost']+=d[key]['cost']
         return res
     
-    def compareFloorWallChanges(self,other,floor,wallType='infill'):
+    def compareFloorWallChanges(self,other,floor,lcaDb,materialId=None,wallThickness=None,wallType='infill'):
         self.parcelizedBuilding[floor].turnOnUnitSurroundingWalls(wallType,self.layoutGraph)
         other.parcelizedBuilding[floor].turnOnUnitSurroundingWalls(wallType,self.layoutGraph)
-        return self.parcelizedBuilding[floor].compareGwpDifference(other.parcelizedBuilding[floor],wallType,self.layoutGraph)
+        return self.parcelizedBuilding[floor].compareGwpDifference(other.parcelizedBuilding[floor],wallType,self.layoutGraph,lcaDb,materialId,wallThickness)
         
     def save(self,savefilePath):
         f= open(savefilePath+'building.txt',"w")
@@ -148,11 +161,17 @@ class Building:
     def drawComparisonChart(self):
         for fR,population in self.layoutPopulation.items():
             population.printBestResults(self.layoutGraph.unitCombinations,self.demographicModel[fR],drawComparisonChart)
-        
+    
+    def getBestFitness(self):
+        for fR,population in self.layoutPopulation.items():
+            return population.getBestFitness()
+    
     def drawFloorGraph(self,floorIndex):
         print("--floor "+str(floorIndex)+" parcelation--")
         parcelized=self.parcelizedBuilding[floorIndex]
-        self.layoutGraph.drawTraversedPaths(parcelized)
+        for u in parcelized.units:
+            print("Unit type "+str(u.getUnitTypeIndex())+":",u.connectedNodeIds)
+#        self.layoutGraph.drawTraversedPaths(parcelized)
     
     def drawAllFloorGraphs(self):
         for floorIndex in sorted(self.parcelizedBuilding.keys()):
@@ -188,6 +207,8 @@ class Building:
         # Only y-axis labels need their rotation set, x-axis labels already have a rotation of 0
         _, labels = plt.yticks()
         plt.setp(labels, rotation=0)
+        
+        elevationData=list()
 
         for floorIndex in sorted(self.parcelizedBuilding.keys()):
             rFloor=len(self.parcelizedBuilding)+1-floorIndex
@@ -195,6 +216,8 @@ class Building:
                 parcelisedLG = self.parcelizedBuilding[rFloor].unitSequence #count downwards due to inversin of origin on heatmap - matpotlib issue
             elif displayType=='ELEVATION':
                 parcelisedLG = self.parcelizedBuilding[rFloor].elevationSequence
+                elevationData.append(self.parcelizedBuilding[rFloor].elevationSequence)
+                print("floor:", rFloor,self.parcelizedBuilding[rFloor].elevationSequence)
 
             index=0
             while index < len(parcelisedLG):
@@ -211,6 +234,7 @@ class Building:
                                              edgecolor='white', facecolor='none')
                     ax.add_patch(rect)
                 index+=numOccupiedDoors
+        
         plt.show()
 
 #==================================DRAW & MISC. FUNCTIONS==================================

@@ -1,20 +1,19 @@
 #TODO: Load layout constants from layout file
 #--Phase 1 constants
-EMPTY_SPACE_THRESHOLD = 10 #ignore unit combinations if empty spaces exceed value specified
+EMPTY_SPACE_THRESHOLD = 35 #ignore unit combinations if empty spaces exceed value specified
 #--Phase 2 Genetic algorithm constants
 GA_MUTATION_RATE = 0.3
-GA_POPCOUNT = 2000
+GA_POPCOUNT = 300
 GA_GENERATIONS = 100
-GA_MATING_POOL_COUNT = 1000
 
 #--UNIT TYPE CONSTANTS
 UNIT_TYPES=[{
     "unitTypeIndex":0,
     "color":(0.031, 0.612, 0.533),
-    "roomCount":3,
+    "roomCount":1,
     "normal":1,
-    "toilet":1,
-    "storage":1
+    "toilet":0,
+    "storage":0
     },
     {
     "unitTypeIndex":1,
