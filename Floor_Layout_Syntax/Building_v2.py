@@ -68,8 +68,9 @@ class Building:
     def getBuildingLayoutResults(self):
         result = dict()
         result['layouts'] = list()
-        result['buildingDist'] = self.getBestBuildingDist()
-        result['demandDist'] = self.demographicModel
+        result['buildingDist'] = list(self.getBestBuildingDist())
+        for fR in self.demographicModel.keys():
+            result['demandDist'] = list(self.demographicModel[fR]) #there is only one for now
         result['dissatisfaction'] = self.getBestFitness()['diff']
         idx = 0
         for floorIndex in sorted(self.parcelizedBuilding.keys()):
@@ -168,7 +169,7 @@ class Building:
     
     def getBestBuildingDist(self):
         for fR,population in self.layoutPopulation.items():
-            return population.bestResults[0].v
+            return list(population.bestResults[0].v)
     
     def getBestFitness(self):
         for fR,population in self.layoutPopulation.items():
