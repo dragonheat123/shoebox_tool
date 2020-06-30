@@ -24,7 +24,7 @@ from LCA import LCADB
 
 class Layout_graph:
 
-    def __init__(self):        
+    def __init__(self,unitTypes):        
         # dictionaries of id:objects
         self.nodes = {}
         self.edges = {}
@@ -48,6 +48,7 @@ class Layout_graph:
         self.unitCombinations={}
         self.combinationResult={}
         self.structuralGwp=0.0
+        self.unitTypes=unitTypes
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 #       UTILITY AND IMPORT FUNCTIONS
@@ -481,7 +482,7 @@ class Layout_graph:
                 currentNode=startNode
                 
                 if demandIndex==0:
-                    criteria=copy.deepcopy(Constants.UNIT_TYPES[d[demandIndex]])
+                    criteria=copy.deepcopy(self.unitTypes[d[demandIndex]])
                     self.traverseDelegateUnitNodes(floorplan,list(),door,currentNode,set(),set(),dict(),dict(),criteria,possibleFloorplans)
 #                    print(d,len(possibleFloorplans))
                 else:
@@ -489,7 +490,7 @@ class Layout_graph:
                     for fp in possibleFloorplans:
                         if startNode.id in fp.occupiedNodes: 
                             continue  
-                        criteria=copy.deepcopy(Constants.UNIT_TYPES[d[demandIndex]])
+                        criteria=copy.deepcopy(self.unitTypes[d[demandIndex]])
                         self.traverseDelegateUnitNodes(fp,list(),door,currentNode,set(),set(),dict(),dict(),criteria,newPossibleFloorplans)
                     if len(newPossibleFloorplans)>0:
                         possibleFloorplans=newPossibleFloorplans
@@ -527,13 +528,13 @@ class Layout_graph:
     
     def generateParcelationDb(self,emptySpaceThreshold,saveParcelationDbPath=None):
         unitCombiResults = {}
-        for i in range(0,len(Constants.UNIT_TYPES)):
-            checkSolutionSpace(self.roomCount.copy(),Constants.UNIT_TYPES,emptySpaceThreshold,i,[],unitCombiResults)
+        for i in range(0,len(self.unitTypes)):
+            checkSolutionSpace(self.roomCount.copy(),self.unitTypes,emptySpaceThreshold,i,[],unitCombiResults)
         i=0
         for idx in sorted(unitCombiResults):
             print((idx,unitCombiResults[idx]))
             countVector = []
-            for unitType in range(len(Constants.UNIT_TYPES)):
+            for unitType in range(len(self.unitTypes)):
                 countVector.append(idx.count(str(unitType)))
             self.unitCombinations[i]={
                     'countVector':countVector,

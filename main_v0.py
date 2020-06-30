@@ -2,11 +2,8 @@ import Floor_Layout_Syntax.Layout_graph_v2 as Layout
 import Floor_Layout_Syntax.Building_v2 as Building
 import numpy as np
 import os
-import pprint
 import copy
-from LCA import LCADB
 import json
-import matplotlib.pyplot as plt
 
 #Known issues:
 #-a unit type may not be generated if floorRange specified is too small and probability of demand is low
@@ -21,28 +18,23 @@ nodes_jsonfilepath = os.path.join(rootPath, 'testcases',testcase+'_nodes.txt')
 lcaDbPath = os.path.join(rootPath, 'testcases','testcase_db.csv')
 results_directory = os.path.join(rootPath,'saved_results')
 
-imageRootPath = os.path.join(rootPath, 'images','floorplan_base3.png')
-pos_path = os.path.join(rootPath, "floorplan_vectors","node position_vectors_rot_offsets.txt")
-lengths_path = os.path.join(rootPath, "floorplan_vectors","position_vector_lengths.txt")
-
-
            
 def createParcelations(nodesJson,edgesJson,floorCount,demandProjection,unitTypes):
-    layout = Layout.Layout_graph()
-    # layout.importJSON(nodes_jsonfilepath, edges_jsonfilepath,lcaDbPath)
+    layout = Layout.Layout_graph(unitTypes)
     layout.loadJson(nodesJson, edgesJson, lcaDbPath)
-    # layout.loadDrawVectors(pos_path, lengths_path,imageRootPath)
     building=Building.Building(layout)
-#    print("Press enter to continue")
-#    input()
-    #
+    
     for year,demand in demandProjection.items():
          print("===processing year "+year+" demands===")
          b=copy.deepcopy(building)
          d={'1-'+str(floorCount):np.array(demand)}
          b.parcelate(d)
-         print(b.getBuildingLayoutResults())
+         res = b.getBuildingLayoutResults()
+         f= open(os.path.join(results_directory,year+'.txt'),"w")
+         f.write(json.dumps(res))
+         f.close()
          print("---successfully results for year "+year+"---")
+         
 #==================================MAIN PROGRAM==================================
 def main():
 #    #**NOTE: Either generate new -OR- load parcelation
@@ -56,7 +48,49 @@ def main():
                '2040':[0.14256652, 0.17999695, 0.35843778, 0.22383094, 0.0951678 ],
                '2060':[0.18699427, 0.17764625, 0.33543391, 0.21086532, 0.08906024],
                '2080':[0.22413532, 0.17169741, 0.31204038, 0.2042384 , 0.08788849]}
-    createParcelations(inputs[0],inputs[1],4,demandProjection,None)
+    
+    unitTypes=[{
+    "unitTypeIndex":0,
+    "color":(0.031, 0.612, 0.533),
+    "roomCount":3,
+    "normal":1,
+    "toilet":1,
+    "storage":1
+    },
+    {
+    "unitTypeIndex":1,
+    "color":(0.643, 0.137, 0.506),
+    "roomCount":5,
+    "normal":3,
+    "toilet":1,
+    "storage":1
+    },
+    {
+    "unitTypeIndex":2,
+    "color":(1, 0.773, 0.235),
+    "roomCount":7,
+    "normal":4,
+    "toilet":2,
+    "storage":1
+    },
+    {
+    "unitTypeIndex":3,
+    "color":(0.922, 0.329, 0.467),
+    "roomCount":8,
+    "normal":5,
+    "toilet":2,
+    "storage":1
+    },
+    {
+    "unitTypeIndex":4,
+    "color":(0.388, 0.647, 0.329),
+    "roomCount":10,
+    "normal":6,
+    "toilet":2,
+    "storage":2
+    }]
+    
+    createParcelations(inputs[0],inputs[1],4,demandProjection,unitTypes)
 
     
     
