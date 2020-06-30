@@ -80,27 +80,16 @@ class Layout_graph:
         
         if isAccessible and self.nodes[nodeId1].roomtype=="service" and (self.nodes[nodeId2].roomtype!="service" or self.nodes[nodeId2].roomtype!="outside"):
             isDoorway=True
-        elif isAccessible and self.nodes[nodeId2].roomtype=="service" and (self.nodes[nodeId1].roomtype!="service" or self.nodes[nodeId1].roomtype!="outside"):
-            isDoorway=True
-        else:
-            isDoorway=False
-        if isDoorway: 
             self.doorEdgeIds.append(edgeId)
             self.nodes[nodeId2].entranceEdge=edgeId #TODO: change to list or set in future if multiple entrances in node
             self.nodes[nodeId2].isEntrance=True
+        elif isAccessible and self.nodes[nodeId2].roomtype=="service" and (self.nodes[nodeId1].roomtype!="service" or self.nodes[nodeId1].roomtype!="outside"):
+            isDoorway=True
             self.doorEdgeIds.append(edgeId)
-            if nodeId2 in self.serviceNodeIds and int(nodeId1) != 0:
-                if isDoorway: 
-                    self.nodes[nodeId2].entranceEdge = None 
-                    self.nodes[nodeId2].isEntrance = False
-                    isDoorway = False
-                    self.doorEdgeIds.pop()
-                else:
-                    isDoorway = True
-                    self.nodes[nodeId1].entranceEdge=edgeId #TODO: change to list or set in future if multiple entrances in node
-                    self.nodes[nodeId1].isEntrance=True
-                    self.doorEdgeIds.append(edgeId)
-        
+            self.nodes[nodeId1].entranceEdge=edgeId #TODO: change to list or set in future if multiple entrances in node
+            self.nodes[nodeId1].isEntrance=True
+        else:
+            isDoorway=False        
         
         #TODO: make this definition more robust
         #-traversable means that the nodes (rooms) can be connected to form a unit
