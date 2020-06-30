@@ -519,13 +519,22 @@
 		
 		for (k=0; k<data.nodes.length; k++){
 			n1={}
-			n1["id"] = data.nodes[k]["id"]
+			n1["id"] = String(data.nodes[k]["id"])
 			n1["roomType"]=data.nodes[k]["roomtype"]
 			n1["floorArea"]= data.nodes[k]["floorArea"]
 			n1["floorMatId"] = "CP032"
 			n1["innerWalls"] = []
-			n1["center"] = data.nodes[k]["center"]
 			node_file.push(n1)
+			// n1["center"] = data.nodes[k]["center"]
+			
+
+		for (j=0; j<edges.length;j++){
+			if (edges[j].edgeId.split("/")[0]=="1"){
+				edges[j]["isDoorway"] = true
+			}else {
+				edges[j]["isDoorway"] = false
+			}
+		}
 
 
 		}

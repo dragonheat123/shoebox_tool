@@ -160,8 +160,8 @@ class Layout_graph:
         for e in edgesData:
             adjWalls = list()
             for w in e['adjWalls']:
-                adjWalls.append(wall.Wall(vertices=w['vertices'], matId=w['matId'], thickness=w['thickness'], composition=w['composition']))
-            self.addEdgeById(edgeId=e['edgeId'], isAccessible=e['isAccessible'], adjWalls=adjWalls)
+                adjWalls.append(wall.Wall(vertices=w['vertices'], matId=w['matId'], thickness=w['thickness'], composition=w['composition']))            
+            self.addEdgeById(edgeId=e['edgeId'], isAccessible=e["isAccessible"], adjWalls=adjWalls)
         #TODO: following function may be dynamic so consider better lcaDb system and structure hierarchy
         print("Edges added:",self.edges.keys())
         print("Door edges:",self.doorEdgeIds)
@@ -199,7 +199,7 @@ class Layout_graph:
                 #            wallType=w['wallType'], wallArea=w['wallArea'], wallLength=w['wallLength'],lcaDb=tempDb))
             # if e['isDoorway']:
             #     self.doorEdgeIds.append(e['edgeId'])
-            self.addEdgeById(edgeId=e['edgeId'], isAccessible=e['isAccessible'], adjWalls=adjWalls)
+            self.addEdgeById(edgeId=e['edgeId'], isAccessible=e["isAccessible"], adjWalls=adjWalls)
         #TODO: following function may be dynamic so consider better lcaDb system and structure hierarchy
         print("Edges added:",self.edges.keys())
         print("Door edges:",self.doorEdgeIds)
@@ -642,19 +642,19 @@ class Layout_graph:
         if lcaDb!=None:
             self.structuralGwp = 0.0
             for e in self.edges.values():
-                self.structuralGwp+=e.getGwpCost('structural')
+                self.structuralGwp+=e.getGwpCost("structural")
             for n in self.nodes.values():
                 self.structuralGwp+=n.getFloorGWP(lcaDb)
         return self.structuralGwp
 
 
 def checkSolutionSpace(layoutRoomCount,unitTypesList,emptySpaceThreshold,it,branchRes,result):
-    layoutRoomCount['normal']-=unitTypesList[it]['normal']
-    layoutRoomCount['toilet']-=unitTypesList[it]['toilet']
-    layoutRoomCount['storage']-=unitTypesList[it]['storage']
+    layoutRoomCount["normal"]-=unitTypesList[it]["normal"]
+    layoutRoomCount["toilet"]-=unitTypesList[it]["toilet"]
+    layoutRoomCount["storage"]-=unitTypesList[it]["storage"]
     
-    if(layoutRoomCount['normal']<0 or layoutRoomCount['toilet']<0 or layoutRoomCount['storage']<0):
-        emptySpace = layoutRoomCount['normal']+unitTypesList[it]['normal']+layoutRoomCount['toilet']+unitTypesList[it]['toilet']+layoutRoomCount['storage']+unitTypesList[it]['storage']
+    if(layoutRoomCount["normal"]<0 or layoutRoomCount["toilet"]<0 or layoutRoomCount["storage"]<0):
+        emptySpace = layoutRoomCount["normal"]+unitTypesList[it]["normal"]+layoutRoomCount["toilet"]+unitTypesList[it]["toilet"]+layoutRoomCount["storage"]+unitTypesList[it]["storage"]
         if emptySpace <= emptySpaceThreshold:
             #sort and stringify combination to represent a unique gene (Combinations are only considered here)
             branchRes.sort()
