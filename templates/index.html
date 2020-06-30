@@ -328,8 +328,8 @@
 			}
 
 			for (k =0;k<edges.length;k++){
-				if (edges[k].edgeId.split("/").includes(String(selected_nodes[i]))){
-					console.log(edges[k].edgeId.split("/"),String(selected_nodes[i]))
+				if (edges[k].edgeId.split("/").includes(String(selected_nodes[i])) && edges[k].edgeId.split("/")[0] != 1){
+					//console.log(edges[k].edgeId.split("/"),String(selected_nodes[i])) 
 					selected_edge = intc[k]
 					
 					edge_2_x = intc[k][1][0]

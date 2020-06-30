@@ -1,6 +1,6 @@
 #TODO: Load layout constants from layout file
 #--Phase 1 constants
-EMPTY_SPACE_THRESHOLD = 10 #ignore unit combinations if empty spaces exceed value specified
+EMPTY_SPACE_THRESHOLD = 5 #ignore unit combinations if empty spaces exceed value specified
 #--Phase 2 Genetic algorithm constants
 GA_MUTATION_RATE = 0.3
 GA_POPCOUNT = 2000
