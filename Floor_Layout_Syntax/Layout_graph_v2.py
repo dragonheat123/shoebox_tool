@@ -3,7 +3,6 @@ import csv
 import json
 import random
 
-import jsonpickle
 import matplotlib.colors as colors
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -222,17 +221,6 @@ class Layout_graph:
         print("Service node ids:",self.serviceNodeIds)
         print("doorEdgeIds:",self.doorEdgeIds)
 
-    def importResultJson(self,importFilePath):
-        f= open(importFilePath,"r")
-        obj=jsonpickle.decode(f.read()) 
-        f.close()
-        return obj
-    
-    def exportResultJson(self,exportPath,obj):
-        f= open(exportPath,"w+")
-        f.write(jsonpickle.encode(obj))
-        f.close()
-        return
     
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 #   CALCULATE EMPTY NODE CLUSTERS    
@@ -558,17 +546,7 @@ class Layout_graph:
     #Layout result with all walls turned on
     def getDefaultLayout(self):
         return p_layout.Parcelized_layout_graph(self)
-    
-    def loadParcelationDb(self,parcelationDbPath):
-        try:
-            f= open(parcelationDbPath,"r")
-            print("Parcelation database found- loading results")
-            self.combinationResult=jsonpickle.decode(f.read()) 
-            f.close()
-            return True
-        except IOError:
-            return False
-        
+
         
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 

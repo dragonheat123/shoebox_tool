@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.colors import LinearSegmentedColormap
 from pandas import DataFrame as df
-import jsonpickle
 
 class Building:
     def __init__(self,layoutGraph):
@@ -122,11 +121,7 @@ class Building:
         self.parcelizedBuilding[floor].turnOnUnitSurroundingWalls(wallType,self.layoutGraph)
         other.parcelizedBuilding[floor].turnOnUnitSurroundingWalls(wallType,self.layoutGraph)
         return self.parcelizedBuilding[floor].compareGwpDifference(other.parcelizedBuilding[floor],wallType,self.layoutGraph,lcaDb,materialId,wallThickness)
-        
-    def save(self,savefilePath):
-        f= open(savefilePath+'building.txt',"w")
-        f.write(jsonpickle.encode(self))
-        f.close()
+
 
     def updateBuildingFloorLayout (self, floorLevel, ParcelizedLayoutGraph):
         self.parcelizedBuilding[floorLevel]=ParcelizedLayoutGraph
@@ -195,12 +190,6 @@ def reindexToIntKeyDict(d):
         correctedDict[int(key)] = value
     return correctedDict
 
-def loadBuilding(savefilePath):
-    f= open(savefilePath+'building.txt',"r")
-    bldg=jsonpickle.decode(f.read())
-    f.close()
-    bldg.reindex()
-    return bldg
     
 def drawDataFrameChart(floorRanges,prefDf,probDf):
     width=0.8
