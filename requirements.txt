@@ -3,6 +3,6 @@ jsonpickle==1.4.1
 pandas==1.0.3
 networkx==2.4
 sortedcontainers==2.1.0
-numpy==1.18.1
+numpy==1.22.0
 more_itertools==8.2.0
 matplotlib==3.1.3
